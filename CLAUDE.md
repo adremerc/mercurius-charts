@@ -1,44 +1,34 @@
 # Padrão de gráficos Mercurius Research (para analistas e agentes de IA)
 
-Todo gráfico da Mercurius sai por esta biblioteca. Referências de linguagem:
-Morgan Stanley Research (exhibits), JPM Guide to the Markets e FMI (WEO/GFSR).
+Todo gráfico da Mercurius sai deste repositório. O caminho padrão é a biblioteca web
+`web/mercurius-charts.js`. A versão Python (`mercurius_charts/`) serve só quando o
+destino exige PNG ou SVG estático.
 
-## Fluxo
+## Fluxo para uma análise nova
 
-1. Dados em pandas: índice = eixo x (datas/anos/categorias), colunas = séries.
-2. `fig, ax = mc.figura(titulo, subtitulo, numero=N, fonte=...)`.
-3. Uma função de `graficos.py` por figura. Não use `ax.plot`/`ax.bar` cru se existe função pronta;
-   se faltar um tipo, crie em `graficos.py` seguindo o mesmo padrão.
-4. Anote: `periodo`, `evento`, `destacar`, `caixa`, `linha_ref`. Um bom exhibit tem de 1 a 3 anotações.
-5. `mc.salvar(fig, "saida/figNN")`. Depois **abra o PNG** e confira se há sobreposição ou
-   corte; ajuste `altura`, `margem_esq` e `margem_dir`.
+1. Copie `analise/` para uma pasta nova (por exemplo `analises/2026-10-halving/`) e ajuste
+   os caminhos `../web/`.
+2. Ponha os dados em `dados.js` (datas como `"AAAA-MM-DD"`) ou carregue um JSON.
+3. Para cada figura, `const [plot] = MC.figura(alvo, {...})` e depois uma função `MC.*`.
+   Consulte a galeria (`web/index.html`) e copie o bloco **</> Código** do tipo mais parecido.
+4. Confira as duas versões: `<html data-theme="light">` e `"dark"`. Nada pode sobrepor ou cortar.
+5. Se faltar um tipo, crie a função em `web/mercurius-charts.js` seguindo o padrão das outras
+   (usar `montar`, `tema`, `eixoY`, `tip`, `legenda`) e acrescente um exemplo na galeria.
 
 ## Texto
 
-- **Título = conclusão**, em frase ("Fluxos para ETFs voltaram a acelerar"), nunca só o assunto
-  ("Fluxos de ETFs").
-- **Subtítulo = unidade + recorte** ("US$ bilhões, semanal, jan/24–dez/25").
-- **Painéis** (FMI): `titulos_paineis=[("Nome", "unidade"), ...]`; a numeração é automática.
-- **`fonte=` é obrigatória**: "Glassnode, CoinMetrics e Mercurius Research.". Dados simulados
-  levam "Dados ilustrativos.".
-- Números no padrão BR (`formato`): 1.388 · 27% · −204 (menos tipográfico) · US$ 1,8 tri · mar/26.
-  Valores em tags e rótulos devem ser arredondados ao que importa (88.400, não 88.383,27).
-- Projeções com sufixo `e` (2026e) e `projecao_desde=`.
+- **Título = conclusão**, em frase ("ETFs voltaram a receber recursos"), nunca só o assunto.
+- **Subtítulo = unidade + frequência + período** ("US$ bilhões, semanal, jan/24–dez/25").
+- **`fonte:` é obrigatória.** Dados simulados levam "Dados ilustrativos.".
+- O título precisa ser verdadeiro para os dados mostrados. Confira o número antes de escrever.
+- Números no padrão BR via `MC.F` (1.388 · 27% · −204 · 88 mil · mar/26).
 
 ## Visual (não negociável)
 
-- Cores só do tema (`mc.tema_atual()`): `principal` (navy, âncora), `destaque` (teal),
-  `outros` (cinza de contexto), `categorica[0..5]` em **ordem fixa**. Nunca escreva hex à mão.
-- `positivo`/`negativo` só para polaridade (fluxo, retorno), nunca como "série 5".
-- No máximo 6 séries com cor. Da 7ª em diante, agrupe em "Outros" ou use painéis.
-- A mesma entidade tem a mesma cor em todas as figuras de um material.
-- **Nada de eixo y duplo.** Escalas diferentes viram painéis (`paineis=(1, 2)`).
-- Prefira rótulo direto (etiquetas na ponta, rótulos dentro de áreas) a legenda.
-- Linhas finas (1,3 pt na principal e 0,9 pt no contexto); grade só horizontal e clara.
-- Nada de 3D, sombra, gradiente decorativo, pizza com mais de 3 fatias ou rótulo em todo ponto.
-
-## Tamanhos
-
-- `largura="inteira"` (6,5 pol) ou `"meia"` (3,15 pol, para dois lado a lado); `"social"` e `"slide"`.
-- `altura` total: 3,0 a 3,6 para um painel e 3,4 a 4,0 para dois painéis ou small multiples.
-- Com etiquetas na ponta, use `margem_dir` de 0,6 a 0,8.
+- Cores só por papel: `"s1"`…`"s6"` (série, em ordem), `"pos"`/`"neg"` (só polaridade),
+  `"outros"` (contexto), `"destaque"`. Nunca hex fixo. Assim os temas claro e escuro funcionam.
+- No máximo 6 séries com cor. Da 7ª em diante, use "Outros" ou painéis (`paineis: [...]`).
+- **Nada de eixo y duplo.** Escalas diferentes vão em painéis lado a lado.
+- Prefira rótulo direto (etiquetas na ponta, rótulos dentro das áreas) a legenda solta.
+- Toda figura nova tem tooltip. As funções da biblioteca já trazem.
+- Use pizza só para até 5 fatias que somam 100%. Prefira `rosca` ou barras.

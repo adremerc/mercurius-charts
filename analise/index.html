@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<!--
+  MODELO DE ANÁLISE — copie esta pasta para começar uma análise nova.
+  1. Troque os dados em dados.js (ou carregue o seu JSON/CSV).
+  2. Escreva o título de cada figura como CONCLUSÃO, não como assunto.
+  3. Use data-theme="light" (relatório) ou "dark" (app/redes) na tag <html>.
+  Abra por um servidor local:  python -m http.server   e acesse /analise/
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nome da análise</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600&display=swap">
+<style>
+  :root{--pg:#ffffff;--tx:#0e1a24;--tx2:#4a5761;--mc-bg:var(--pg)}
+  :root[data-theme="dark"]{--pg:#0e1318;--tx:#f2f6f8;--tx2:#a6b3bd;color-scheme:dark}
+  body{margin:0;background:var(--pg);color:var(--tx);font:15px/1.6 "Inter",system-ui,sans-serif}
+  main{max-width:860px;margin:0 auto;padding:40px 20px;display:flex;flex-direction:column;gap:28px}
+  .casa{font:600 12px "Outfit",sans-serif;letter-spacing:.16em}
+  h1{font:600 32px/1.15 "Outfit",sans-serif;margin:0}
+  p{margin:0;color:var(--tx2)} p b{color:var(--tx)}
+</style>
+</head>
+<body>
+<main>
+  <div class="casa">MERCURIUS RESEARCH</div>
+  <h1>Nome da análise</h1>
+  <p><b>Frase-tese em negrito.</b> Depois, a evidência em números. Cada parágrafo abre com a conclusão.</p>
+
+  <div id="fig1"></div>
+  <div id="fig2"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="../web/mercurius-charts.js"></script>
+<script src="dados.js"></script>
+<script>
+  const { F } = MC;
+  const FONTE = "Fonte dos dados e Mercurius Research.";
+
+  // Figura 1 — série temporal
+  const [p1] = MC.figura("#fig1", {
+    numero: 1, titulo: "Título que conta a conclusão", subtitulo: "Unidade, frequência, período", fonte: FONTE,
+  });
+  MC.linhas(p1, { series: DADOS.precos, area: true, passo: "trimestre" });
+
+  // Figura 2 — comparação entre categorias
+  const [p2] = MC.figura("#fig2", {
+    numero: 2, titulo: "Outra conclusão", subtitulo: "Retorno no período, %", fonte: FONTE,
+  });
+  MC.barrasHorizontais(p2, { dados: DADOS.retornos, referencia: [0.10, "Benchmark +10%"] });
+</script>
+</body>
+</html>

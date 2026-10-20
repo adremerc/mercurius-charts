@@ -1,84 +1,71 @@
-# mercurius-charts
+# Mercurius Charts
 
-Duas implementações do mesmo padrão:
+Template de gráficos da **Mercurius Research**. Os gráficos são desenhados por código, a partir dos dados, em versão **escura** (app e redes) e **clara** (relatórios). A linguagem visual segue os exhibits de Morgan Stanley Research, JPM Guide to the Markets e FMI: título que conta a conclusão, tipografia precisa, anotações e fonte em toda figura.
 
-- **`web/`**: gráficos desenhados ao vivo no navegador (`mercurius-charts.js`, D3). São vetoriais e interativos (tooltip e crosshair), seguem o tema escuro do app e servem para portal, site e relatórios web. Para ver, abra `web/index.html` por um servidor local: `python -m http.server -d web`.
-- **`mercurius_charts/`** (Python): PNG e SVG para PDF, Word e redes.
+| Escuro | Claro |
+|---|---|
+| ![](docs/velas-escuro.png) | ![](docs/velas-claro.png) |
+| ![](docs/quant-escuro.png) | ![](docs/quant-claro.png) |
 
-## Web, em 3 linhas
+## Como começar
+
+1. Clique em **Use this template → Create a new repository** (ou clone este repositório).
+2. Rode um servidor local na raiz:
+   ```bash
+   python -m http.server 8000
+   ```
+3. Abra a galeria em `http://localhost:8000/web/` para ver os 24 exemplos. Cada um tem o botão **</> Código** com a chamada que o gera.
+4. Para uma análise nova, copie a pasta [`analise/`](analise/), troque os dados em `dados.js` e escreva os gráficos em `index.html`.
+
+## Uso em 4 linhas
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="mercurius-charts.js"></script>
+<script src="web/mercurius-charts.js"></script>
 <div id="fig"></div>
 <script>
-  const [plot] = MC.figura("#fig", { numero: 1, titulo: "BTC descolou do ETH desde os ETFs",
-                                     subtitulo: "Base 100 = jan/23", fonte: "Mercurius Research." });
-  MC.linhas(plot, { series: { BTC: [["2023-01-06", 100], ...], ETH: [...] }, area: true });
+  const [plot] = MC.figura("#fig", { numero: 1, titulo: "BTC volta acima das médias móveis",
+                                     subtitulo: "Diário, US$", fonte: "Mercurius Research." });
+  MC.velas(plot, { dados: ohlc, medias: [20, 50], volume: true });
 </script>
 ```
 
-Funções: `linhas`, `barrasTempo`, `areaEmpilhada`, `dispersao`, `leque`, `calendario`, `cascata` e `barrasHorizontais`. Formatos BR em `MC.F`.
+**Tema:** a figura segue a página (`<html data-theme="light">` ou `"dark"`, ou o modo do sistema). Para forçar o tema numa figura só, use `MC.figura(alvo, { tema: "claro" })`.
 
----
+## Catálogo (`web/mercurius-charts.js`)
 
-## Python
+| Grupo | Função | Uso |
+|---|---|---|
+| Preço e tendência | `MC.velas` | candlestick, `tipo: "ohlc"` ou `"heikin"`, médias móveis e volume |
+| | `MC.renko` | tijolos atemporais, filtra ruído |
+| | `MC.pontoFigura` | colunas de X e O, reversão configurável |
+| | `MC.linhas` | linha, escala log, área, eventos, períodos, etiquetas na ponta |
+| Estatísticos e quant | `MC.histograma` | distribuição de retornos, curva normal, VaR, curtose |
+| | `MC.regressao` | dispersão com reta de MQO, beta, correlação, R² |
+| | `MC.dispersao` | bolhas com rótulos sem colisão (risco × retorno) |
+| | `MC.drawdown` | queda desde o topo, pior queda anotada |
+| | `MC.curvaJuros` | curva por vencimento, comparação no tempo, spread |
+| | `MC.boxplot` | quartis, mediana e outliers |
+| | `MC.rrg` | Relative Rotation Graph em quadrantes, com rastro |
+| | `MC.leque` | projeção com bandas de probabilidade (fan chart) |
+| | `MC.calendario` | retornos mensais ano × mês |
+| Fundamentalistas | `MC.colunas` | receita, EBITDA, lucro por trimestre, com projeção |
+| | `MC.cascata` | ponte e DRE (subtotais com `[nome, null]`) |
+| | `MC.rosca` | composição de carteira; `tipo: "pizza"` |
+| | `MC.barrasHorizontais` | ranking com linha de referência |
+| Fluxos | `MC.barrasTempo` | fluxos semanais e mensais (positivo/negativo) |
+| | `MC.areaEmpilhada` | composição no tempo com caixa de números |
 
-Gráficos no padrão **Mercurius Research**, com a linguagem visual dos exhibits de Morgan Stanley Research, JPM Guide to the Markets e das figuras do FMI (WEO/GFSR): títulos que contam a conclusão, tipografia pequena e precisa, linhas finas, painéis numerados, anotações de eventos e etiquetas de valor.
+Formatos BR em `MC.F`: `num`, `pct`, `pp`, `mil`, `mes`, `dia`.
 
-```python
-import mercurius_charts as mc
-from mercurius_charts import formato as F
+## Estrutura
 
-fig, ax = mc.figura("Cada halving antecedeu uma nova máxima do bitcoin",
-                    "Preço em US$, escala logarítmica, semanal",
-                    numero=1, fonte="Glassnode e Mercurius Research.", margem_dir=0.78)
-mc.periodo(ax, "2021-11-10", "2022-11-21", "Bear market")
-mc.linhas(ax, precos, log=True)
-mc.evento(ax, "2024-04-20", "Halving")
-mc.salvar(fig, "saida/fig01")      # PNG 300 dpi + SVG editável (Figma)
+```
+web/            biblioteca JS + galeria (index.html) + dados de exemplo
+analise/        modelo para copiar e começar uma análise nova
+mercurius_charts/, exemplos/   versão Python (PNG/SVG para PDF e Word)
+docs/           imagens do README
+CLAUDE.md       regras do padrão (para analistas e para IA)
 ```
 
-## Galeria
-
-| | |
-|---|---|
-| ![](galeria/01_linhas_log_eventos.png) | ![](galeria/02_paineis_fmi.png) |
-| ![](galeria/03_area_empilhada.png) | ![](galeria/04_dispersao_bolhas.png) |
-| ![](galeria/05_leque_projecao.png) | ![](galeria/06_calendario_retornos.png) |
-| ![](galeria/11_cascata.png) | ![](galeria/12_barras_empilhadas.png) |
-| ![](galeria/07_halteres.png) | ![](galeria/08_faixas.png) |
-| ![](galeria/09_correlacao.png) | ![](galeria/13_ranking.png) |
-| ![](galeria/10_composicao_100.png) | ![](galeria/14_tema_escuro.png) |
-
-Os números da galeria são **ilustrativos**. Para regenerar: `python exemplos/galeria.py` (ou `... 1 5 9` para só algumas).
-
-## Peças
-
-**Moldura:** `mc.figura(titulo, subtitulo, numero, fonte, nota, paineis=(1, 2), titulos_paineis=[...])`
-
-**Gráficos**
-
-| Função | Uso |
-|---|---|
-| `linhas` | séries temporais, escala log, destaque e etiquetas na ponta |
-| `area_empilhada` | composição ao longo do tempo, com rótulos dentro das faixas |
-| `barras_tempo` | fluxos semanais e mensais (positivo/negativo) |
-| `barras` | categorias e anos; agrupadas ou `empilhar=True`, faixa de projeção |
-| `barras_horizontais` | ranking com linha de referência |
-| `barras_100` | composição percentual |
-| `dispersao` | risco × retorno, bolhas, rótulos sem colisão, regressão |
-| `cascata` | ponte e atribuição de retorno |
-| `leque` | projeção com bandas de probabilidade (fan chart do FMI) |
-| `calendario` | heatmap de retornos ano × mês |
-| `halteres` | antes × depois por categoria |
-| `intervalos` | faixa mín.–máx. com valor atual e mediana |
-| `correlacao` | matriz triangular |
-
-**Anotações:** `periodo`, `evento`, `linha_ref`, `destacar`, `caixa` (estatísticas no estilo JPM), `etiquetas_finais`.
-
-**Formatos BR:** `F.num`, `F.pct`, `F.pp`, `F.moeda`, `F.eixo_data`.
-
-**Temas:** `claro` para relatórios e `escuro` para app e redes (`tema="escuro"`).
-
-Regras do padrão em [CLAUDE.md](CLAUDE.md).
+Os dados de exemplo são ilustrativos. Para regenerá-los: `python web/gerar_dados.py`.
