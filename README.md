@@ -1,5 +1,29 @@
 # mercurius-charts
 
+Duas implementações do mesmo padrão:
+
+- **`web/`**: gráficos desenhados ao vivo no navegador (`mercurius-charts.js`, D3). São vetoriais e interativos (tooltip e crosshair), seguem o tema escuro do app e servem para portal, site e relatórios web. Para ver, abra `web/index.html` por um servidor local: `python -m http.server -d web`.
+- **`mercurius_charts/`** (Python): PNG e SVG para PDF, Word e redes.
+
+## Web, em 3 linhas
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="mercurius-charts.js"></script>
+<div id="fig"></div>
+<script>
+  const [plot] = MC.figura("#fig", { numero: 1, titulo: "BTC descolou do ETH desde os ETFs",
+                                     subtitulo: "Base 100 = jan/23", fonte: "Mercurius Research." });
+  MC.linhas(plot, { series: { BTC: [["2023-01-06", 100], ...], ETH: [...] }, area: true });
+</script>
+```
+
+Funções: `linhas`, `barrasTempo`, `areaEmpilhada`, `dispersao`, `leque`, `calendario`, `cascata` e `barrasHorizontais`. Formatos BR em `MC.F`.
+
+---
+
+## Python
+
 Gráficos no padrão **Mercurius Research**, com a linguagem visual dos exhibits de Morgan Stanley Research, JPM Guide to the Markets e das figuras do FMI (WEO/GFSR): títulos que contam a conclusão, tipografia pequena e precisa, linhas finas, painéis numerados, anotações de eventos e etiquetas de valor.
 
 ```python
