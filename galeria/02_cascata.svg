@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="496.8pt" height="216pt" viewBox="0 0 496.8 216" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-20T15:50:33.750853</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 216 
+L 496.8 216 
+L 496.8 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 161.28 
+L 488.16 161.28 
+L 488.16 36 
+L 30.24 36 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(49.916966 171.2025)">Carteira</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(55.121341 180.1495)">2025</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(99.613994 171.2025)">Valorização</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(113.084619 180.1495)">BTC</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(155.457896 171.2025)">Valorização</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(168.464771 180.1495)">ETH</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(217.381799 171.2025)">Aportes</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(217.355549 180.289)">líquidos</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #4c575f" x="287.121951" y="171.2025" transform="rotate(-0 287.121951 171.2025)">Altcoins</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6"/>
+     <g id="text_6">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #4c575f" x="342.965854" y="171.16" transform="rotate(-0 342.965854 171.16)">Resgates</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7"/>
+     <g id="text_7">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(386.347881 171.2025)">Taxas e</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(387.634131 180.1495)">custos</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_8"/>
+     <g id="text_8">
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(440.824284 171.2025)">Carteira</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(446.028659 180.1495)">2026</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_9">
+    <path d="M 81.057951 106.457196 
+L 102.278634 106.457196 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_10">
+    <path d="M 136.901854 78.463812 
+L 158.122537 78.463812 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_11">
+    <path d="M 192.745756 69.152083 
+L 213.966439 69.152083 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_12">
+    <path d="M 248.589659 54.660705 
+L 269.810341 54.660705 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_13">
+    <path d="M 304.433561 49.422857 
+L 325.654244 49.422857 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_14">
+    <path d="M 360.277463 61.295311 
+L 381.498146 61.295311 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="line2d_15">
+    <path d="M 416.121366 63.506847 
+L 437.342049 63.506847 
+" clip-path="url(#p4ed50a46f7)" style="fill: none; stroke-dasharray: 1.4,1.4; stroke-dashoffset: 0; stroke: #76828b; stroke-width: 0.7"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 46.434732 161.28 
+L 81.057951 161.28 
+L 81.057951 106.457196 
+L 46.434732 106.457196 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1f2529"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 102.278634 106.457196 
+L 136.901854 106.457196 
+L 136.901854 78.463812 
+L 102.278634 78.463812 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1aa39b"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 158.122537 78.463812 
+L 192.745756 78.463812 
+L 192.745756 69.152083 
+L 158.122537 69.152083 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1aa39b"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 213.966439 69.152083 
+L 248.589659 69.152083 
+L 248.589659 54.660705 
+L 213.966439 54.660705 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1aa39b"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 269.810341 54.660705 
+L 304.433561 54.660705 
+L 304.433561 49.422857 
+L 269.810341 49.422857 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1aa39b"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 325.654244 61.295311 
+L 360.277463 61.295311 
+L 360.277463 49.422857 
+L 325.654244 49.422857 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #e2605a"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 381.498146 63.506847 
+L 416.121366 63.506847 
+L 416.121366 61.295311 
+L 381.498146 61.295311 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #e2605a"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 437.342049 161.28 
+L 471.965268 161.28 
+L 471.965268 63.506847 
+L 437.342049 63.506847 
+z
+" clip-path="url(#p4ed50a46f7)" style="fill: #1f2529"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 30.24 161.28 
+L 488.16 161.28 
+" style="fill: none; stroke: #d5dadd; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="63.746341" y="101.617196" transform="rotate(-0 63.746341 101.617196)">942</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="119.590244" y="73.623812" transform="rotate(-0 119.590244 73.623812)">+481</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="175.434146" y="64.312083" transform="rotate(-0 175.434146 64.312083)">+160</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="231.278049" y="49.820705" transform="rotate(-0 231.278049 49.820705)">+249</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="287.121951" y="44.582857" transform="rotate(-0 287.121951 44.582857)">+90</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="342.965854" y="70.217811" transform="rotate(-0 342.965854 70.217811)">−204</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="398.809756" y="72.429347" transform="rotate(-0 398.809756 72.429347)">−38</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: middle; fill: #0e1318" x="454.653659" y="58.666847" transform="rotate(-0 454.653659 58.666847)">1.680</text>
+   </g>
+  </g>
+  <g id="line2d_16">
+   <path d="M 4.32 24.48 
+L 492.48 24.48 
+" style="fill: none; stroke: #d5dadd; stroke-width: 0.8; stroke-linecap: round"/>
+  </g>
+  <g id="line2d_17">
+   <path d="M 4.32 24.48 
+L 34.56 24.48 
+" style="fill: none; stroke: #1aa39b; stroke-width: 2.2"/>
+  </g>
+  <g id="text_17">
+   <text style="font-weight: 700; font-size: 10.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="4.32" y="14.4" transform="rotate(-0 4.32 14.4)">Figura 2: </text>
+  </g>
+  <g id="text_18">
+   <text style="font-weight: 500; font-size: 10.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="50.22" y="14.4" transform="rotate(-0 50.22 14.4)">Da carteira de 2025 à de 2026</text>
+  </g>
+  <g id="text_19">
+   <text style="font-size: 10.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="188.82" y="14.4" transform="rotate(-0 188.82 14.4)">  –  US$ milhões</text>
+  </g>
+  <g id="text_20">
+   <text style="font-size: 6.8px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="4.32" y="207.199875" transform="rotate(-0 4.32 207.199875)">Nota: Valores de fim de ano; aportes líquidos de resgates.</text>
+  </g>
+  <g id="text_21">
+   <text style="font-size: 6.8px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="4.32" y="197.156" transform="rotate(-0 4.32 197.156)">Fonte: Mercurius Research. Dados ilustrativos.</text>
+  </g>
+  <g id="text_22">
+   <text style="font-weight: 700; font-size: 7px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="415.8" y="207.19" transform="rotate(-0 415.8 207.19)">MERCURIUS</text>
+  </g>
+  <g id="text_23">
+   <text style="font-size: 7px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="455.85" y="207.19" transform="rotate(-0 455.85 207.19)">  RESEARCH</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p4ed50a46f7">
+   <rect x="30.24" y="36" width="457.92" height="125.28"/>
+  </clipPath>
+ </defs>
+</svg>

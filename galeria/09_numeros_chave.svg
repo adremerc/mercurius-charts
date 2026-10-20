@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="496.8pt" height="172.8pt" viewBox="0 0 496.8 172.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-20T15:50:35.792827</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 172.8 
+L 496.8 172.8 
+L 496.8 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 20.592 122.6304 
+L 150.768 122.6304 
+Q 160.5312 122.6304 160.5312 117.1008 
+L 160.5312 47.0592 
+Q 160.5312 41.5296 150.768 41.5296 
+L 20.592 41.5296 
+Q 10.8288 41.5296 10.8288 47.0592 
+L 10.8288 117.1008 
+Q 10.8288 122.6304 20.592 122.6304 
+z
+" clip-path="url(#p25dab8040f)" style="fill: #eef1f3"/>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="mee9f46f7ae" d="M 0 -2.44949 
+L -2.44949 2.44949 
+L 2.44949 2.44949 
+z
+"/>
+    </defs>
+    <g clip-path="url(#p25dab8040f)">
+     <use xlink:href="#mee9f46f7ae" x="24.66" y="112.9536" style="fill: #1aa39b"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 183.312 122.6304 
+L 313.488 122.6304 
+Q 323.2512 122.6304 323.2512 117.1008 
+L 323.2512 47.0592 
+Q 323.2512 41.5296 313.488 41.5296 
+L 183.312 41.5296 
+Q 173.5488 41.5296 173.5488 47.0592 
+L 173.5488 117.1008 
+Q 173.5488 122.6304 183.312 122.6304 
+z
+" clip-path="url(#p25dab8040f)" style="fill: #eef1f3"/>
+   </g>
+   <g id="PathCollection_2">
+    <g clip-path="url(#p25dab8040f)">
+     <use xlink:href="#mee9f46f7ae" x="187.38" y="112.9536" style="fill: #1aa39b"/>
+    </g>
+   </g>
+   <g id="patch_4">
+    <path d="M 346.032 122.6304 
+L 476.208 122.6304 
+Q 485.9712 122.6304 485.9712 117.1008 
+L 485.9712 47.0592 
+Q 485.9712 41.5296 476.208 41.5296 
+L 346.032 41.5296 
+Q 336.2688 41.5296 336.2688 47.0592 
+L 336.2688 117.1008 
+Q 336.2688 122.6304 346.032 122.6304 
+z
+" clip-path="url(#p25dab8040f)" style="fill: #eef1f3"/>
+   </g>
+   <g id="PathCollection_3">
+    <defs>
+     <path id="m2181e90f68" d="M -0 2.44949 
+L 2.44949 -2.44949 
+L -2.44949 -2.44949 
+z
+"/>
+    </defs>
+    <g clip-path="url(#p25dab8040f)">
+     <use xlink:href="#m2181e90f68" x="350.1" y="112.9536" style="fill: #e2605a"/>
+    </g>
+   </g>
+   <g id="line2d_1">
+    <path d="M 20.592 54.432 
+L 43.3728 54.432 
+" clip-path="url(#p25dab8040f)" style="fill: none; stroke: #1aa39b; stroke-width: 2.2"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 183.312 54.432 
+L 206.0928 54.432 
+" clip-path="url(#p25dab8040f)" style="fill: none; stroke: #1aa39b; stroke-width: 2.2"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 346.032 54.432 
+L 368.8128 54.432 
+" clip-path="url(#p25dab8040f)" style="fill: none; stroke: #1aa39b; stroke-width: 2.2"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 600; font-size: 19px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="20.592" y="77.711969" transform="rotate(-0 20.592 77.711969)">US$ 345 bi</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; text-anchor: start; fill: #4c575f" x="20.592" y="93.6171" transform="rotate(-0 20.592 93.6171)">Oferta de USDT projetada para 2030</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 7.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="31.9824" y="114.867272" transform="rotate(-0 31.9824 114.867272)">+60% vs. 2026</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 600; font-size: 19px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="183.312" y="77.711969" transform="rotate(-0 183.312 77.711969)">27%</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(183.312 93.5321)">Retorno anual estimado da</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(183.312 103.07135)">carteira-modelo</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 7.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="194.7024" y="114.867272" transform="rotate(-0 194.7024 114.867272)">+4 p.p. vs. 2025</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 600; font-size: 19px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="346.032" y="77.711969" transform="rotate(-0 346.032 77.711969)">2,4 anos</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(346.032 93.64835)">Payback médio das posições de</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI'; fill: #4c575f" transform="translate(346.032 103.2301)">mineração</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 7.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="357.4224" y="114.867272" transform="rotate(-0 357.4224 114.867272)">−0,3 ano vs. 2025</text>
+   </g>
+  </g>
+  <g id="line2d_4">
+   <path d="M 4.32 24.48 
+L 492.48 24.48 
+" style="fill: none; stroke: #d5dadd; stroke-width: 0.8; stroke-linecap: round"/>
+  </g>
+  <g id="line2d_5">
+   <path d="M 4.32 24.48 
+L 34.56 24.48 
+" style="fill: none; stroke: #1aa39b; stroke-width: 2.2"/>
+  </g>
+  <g id="text_10">
+   <text style="font-weight: 500; font-size: 10.5px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="4.32" y="14.4" transform="rotate(-0 4.32 14.4)">Caso você tenha apenas um minuto</text>
+  </g>
+  <g id="text_11">
+   <text style="font-size: 6.8px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="4.32" y="164.036" transform="rotate(-0 4.32 164.036)">Fonte: Mercurius Research. Dados ilustrativos.</text>
+  </g>
+  <g id="text_12">
+   <text style="font-weight: 700; font-size: 7px; font-family: 'Segoe UI'; text-anchor: start; fill: #0e1318" x="415.8" y="163.99" transform="rotate(-0 415.8 163.99)">MERCURIUS</text>
+  </g>
+  <g id="text_13">
+   <text style="font-size: 7px; font-family: 'Segoe UI'; text-anchor: start; fill: #76828b" x="455.85" y="163.99" transform="rotate(-0 455.85 163.99)">  RESEARCH</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p25dab8040f">
+   <rect x="4.32" y="36" width="488.16" height="92.16"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mercurius-charts"
+version = "0.1.0"
+description = "Gráficos e relatórios no padrão visual Mercurius Research"
+requires-python = ">=3.10"
+dependencies = ["matplotlib>=3.8", "pandas>=2.0", "numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+include = ["mercurius_charts*"]
+
+[tool.setuptools.package-data]
+mercurius_charts = ["fonts/*.ttf", "fonts/*.otf"]
