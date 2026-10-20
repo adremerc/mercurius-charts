@@ -12,5 +12,4 @@ dependencies = ["matplotlib>=3.8", "pandas>=2.0", "numpy>=1.26"]
 [tool.setuptools.packages.find]
 include = ["mercurius_charts*"]
 
-[tool.setuptools.package-data]
-mercurius_charts = ["fonts/*.ttf", "fonts/*.otf"]
+
