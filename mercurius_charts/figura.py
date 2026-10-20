@@ -1,9 +1,18 @@
-"""Moldura padrão de figura: título numerado, régua, legenda, fonte e assinatura.
+"""Moldura de figura ("exhibit") Mercurius.
 
-    fig, ax = mc.figura("Oferta de stablecoins por emissor", unidade="US$ bilhões",
-                        numero=1, fonte="DefiLlama e Mercurius Research.")
-    mc.barras_empilhadas(ax, df)
-    mc.salvar(fig, "saida/fig01")
+Anatomia (de cima para baixo):
+    ─────────────────────────────  régua navy
+    FIGURA 3                       eyebrow em teal
+    Título que conta a conclusão   negrito
+    Unidade, período, recorte      cinza
+    [1. Painel  (unidade)]         painéis numerados no estilo FMI
+    [legenda compacta]
+    ┌ gráfico ┐
+    ─────────────────────────────  filete
+    Fonte: ...            MERCURIUS RESEARCH
+
+Todo o layout é calculado em polegadas, então figuras de tamanhos diferentes
+mantêm exatamente as mesmas distâncias entre os elementos.
 """
 
 import textwrap
@@ -13,149 +22,138 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
 
-from .tema import fonte_titulo, usar_tema
-from .tokens import LARGURA, TAMANHO
+from .tema import usar_tema
+from .tokens import LARGURA, T
 
-# Faixas fixas em polegadas — é isso que deixa todas as figuras com o mesmo "esqueleto".
-_TOPO_TITULO = 0.40
-_FAIXA_LEGENDA = 0.24
-_MARGEM_X = 0.06
-_LINHA_RODAPE = 0.14
+_PT = 1 / 72
 
 
-def texto_rico(fig, x, y, partes, ha="left", va="baseline", **kw):
-    """Escreve trechos com estilos diferentes lado a lado.
+def figura(titulo, subtitulo=None, numero=None, fonte=None, nota=None,
+           largura="inteira", altura=3.3, paineis=(1, 1), titulos_paineis=None,
+           numerar_paineis=True, legenda=False, tema="claro",
+           margem_esq=0.40, margem_dir=0.10, espaco_col=0.30, espaco_lin=0.30,
+           eixo_x=True, assinatura=True):
+    """Cria a figura e devolve (fig, ax) ou (fig, [axes]).
 
-    partes = [("Figura 1: ", {"weight": "bold"}), ("Título", {}), (" – US$ bi", {"color": "#777"})]
-    """
-    r = fig.canvas.get_renderer()
-    inv = fig.transFigure.inverted()
-    artistas, cx = [], x
-    for txt, estilo in partes:
-        a = fig.text(cx, y, txt, ha="left", va=va, **{**kw, **estilo})
-        bb = a.get_window_extent(renderer=r)
-        cx = inv.transform((bb.x1, bb.y0))[0]
-        artistas.append(a)
-    if ha == "right":
-        desloc = cx - x
-        for a in artistas:
-            a.set_x(a.get_position()[0] - desloc)
-    return artistas
-
-
-def figura(titulo, unidade=None, numero=None, fonte=None, nota=None,
-           largura="inteira", altura=2.8, grade=(1, 1), tema="claro",
-           legenda=True, assinatura=True, margem_esq=0.42, margem_dir=0.12,
-           espaco_h=None, espaco_v=None, topo_extra=0.0, **gs_kw):
-    """Cria uma figura no padrão Mercurius e devolve (fig, ax) ou (fig, axes).
-
-    largura: "inteira" | "meia" | "slide" | "social" | polegadas.
-    altura: altura TOTAL da figura em polegadas (inclui título e rodapé).
-    legenda: reserva a faixa sob o título para a legenda (use mc.legenda/ automático).
-    topo_extra: polegadas extras acima do gráfico (ex.: rótulos de coluna no topo).
+    titulo: a CONCLUSÃO ("Fluxos para ETFs voltaram a acelerar"), não o assunto.
+    subtitulo: unidade e recorte ("US$ bilhões, semanal, jan/24–set/26").
+    titulos_paineis: [("Fluxo mensal", "US$ bilhões"), ...] — um por painel.
+    legenda: reserva uma faixa sobre cada painel para mc.legenda(ax, ...).
+    margem_dir: aumente (≈0.6) quando usar mc.etiquetas_finais.
     """
     t = usar_tema(tema)
-    w = LARGURA.get(largura, largura) if isinstance(largura, str) else largura
-    fig = plt.figure(figsize=(w, altura))
+    W = LARGURA.get(largura, largura) if isinstance(largura, str) else float(largura)
+    H = float(altura)
+    fig = plt.figure(figsize=(W, H))
+    x0 = 0.0
 
-    # --- rodapé: fonte + notas (quebra automática pela largura) -------------
-    chars = int(w * 17.5)
-    linhas_rodape = []
-    if fonte:
-        linhas_rodape += textwrap.wrap(f"Fonte: {fonte}", chars)
-    if nota:
-        linhas_rodape += textwrap.wrap(f"Nota: {nota}", chars)
-    rodape_in = 0.10 + _LINHA_RODAPE * max(len(linhas_rodape), 1)
+    def fx(pol):
+        return pol / W
 
-    topo_in = _TOPO_TITULO + (_FAIXA_LEGENDA if legenda else 0) + 0.10 + topo_extra
-    if grade != (1, 1):
-        topo_in += 0.18  # espaço para os subtítulos dos painéis
-    base_in = rodape_in + 0.38  # espaço para rótulos do eixo x
+    def fy(pol_do_topo):
+        return 1 - pol_do_topo / H
 
-    gs = fig.add_gridspec(
-        *grade,
-        left=margem_esq / w, right=1 - margem_dir / w,
-        top=1 - topo_in / altura, bottom=base_in / altura,
-        wspace=espaco_h, hspace=espaco_v, **gs_kw,
-    )
-    axes = [[fig.add_subplot(gs[i, j]) for j in range(grade[1])] for i in range(grade[0])]
-
-    # --- cabeçalho ---------------------------------------------------------
-    x0 = _MARGEM_X / w
-    y_tit = 1 - 0.20 / altura
-    partes = []
+    # ---------------- cabeçalho
+    fig.add_artist(Line2D([0, 1], [fy(0.02)] * 2, transform=fig.transFigure,
+                          color=t.regua, lw=1.6, solid_capstyle="butt"))
+    y = 0.20
     if numero is not None:
-        partes.append((f"Figura {numero}: ", {"weight": "bold", "color": t.texto}))
-    partes.append((titulo, {"color": t.texto, "weight": "medium"}))
-    if unidade:
-        partes.append((f"  –  {unidade}", {"color": t.texto_3}))
-    texto_rico(fig, x0, y_tit, partes, fontsize=TAMANHO["titulo_figura"],
-               family=fonte_titulo())
+        fig.text(fx(x0), fy(y), f"FIGURA {numero}", fontsize=T["eyebrow"], weight="bold",
+                 color=t.destaque, va="baseline")
+        y += 0.19
+    linhas_tit = textwrap.wrap(titulo, int(W * 11.5))
+    for lt in linhas_tit:
+        fig.text(fx(x0), fy(y), lt, fontsize=T["titulo"], weight="bold", color=t.texto,
+                 va="baseline")
+        y += 0.17
+    if subtitulo:
+        y += 0.01
+        fig.text(fx(x0), fy(y), subtitulo, fontsize=T["subtitulo"], color=t.texto_2, va="baseline")
+        y += 0.06
+    topo_conteudo = y + 0.16
 
-    y_regua = 1 - (_TOPO_TITULO - 0.06) / altura
-    fig.add_artist(Line2D([x0, 1 - x0], [y_regua, y_regua], transform=fig.transFigure,
-                          color=t.linha_fina, lw=0.8))
-    fig.add_artist(Line2D([x0, x0 + 0.42 / w], [y_regua, y_regua], transform=fig.transFigure,
-                          color=t.destaque, lw=2.2, solid_capstyle="butt"))
-
-    # --- rodapé ------------------------------------------------------------
-    y = 0.10 / altura
-    for linha in reversed(linhas_rodape):
-        fig.text(x0, y, linha, fontsize=TAMANHO["fonte"], color=t.texto_3, va="bottom")
-        y += _LINHA_RODAPE / altura
+    # ---------------- rodapé
+    chars = int(W * 21)
+    rod = []
+    if nota:
+        rod += textwrap.wrap(f"Nota: {nota}", chars)
+    if fonte:
+        rod += textwrap.wrap(f"Fonte: {fonte}", chars)
+    h_rod = 0.06 + 0.105 * max(len(rod), 1)
+    yb = 0.06
+    for linha in reversed(rod):
+        fig.text(fx(x0), yb / H, linha, fontsize=T["fonte"], color=t.texto_3, va="bottom")
+        yb += 0.105
+    fig.add_artist(Line2D([0, 1], [(h_rod + 0.04) / H] * 2, transform=fig.transFigure,
+                          color=t.grade, lw=0.6))
     if assinatura:
-        texto_rico(fig, 1 - x0, 0.10 / altura,
-                   [("MERCURIUS", {"weight": "bold", "color": t.texto}),
-                    ("  RESEARCH", {"color": t.texto_3})],
-                   ha="right", va="bottom", fontsize=TAMANHO["assinatura"],
-                   family=fonte_titulo())
+        fig.text(1, 0.06 / H, "MERCURIUS", fontsize=T["fonte"], weight="bold",
+                 color=t.texto, ha="right", va="bottom")
+    base_conteudo = h_rod + 0.10 + (0.22 if eixo_x else 0.05)
 
-    fig._merc = {"tema": t, "legenda_y": 1 - (_TOPO_TITULO + 0.04) / altura,
-                 "x0": x0, "legenda": legenda, "largura": w, "altura": altura}
+    # ---------------- painéis (posições manuais, em polegadas)
+    nl, nc = paineis
+    h_titulo_painel = 0.30 if titulos_paineis else 0.0
+    h_leg = 0.17 if legenda else 0.0
+    cab = h_titulo_painel + h_leg
+    area_w = W - margem_esq - margem_dir
+    area_h = H - topo_conteudo - base_conteudo
+    pw = (area_w - (nc - 1) * (espaco_col + margem_esq)) / nc
+    ph = (area_h - nl * cab - (nl - 1) * espaco_lin) / nl
+    axes = []
+    k = 0
+    for i in range(nl):
+        for j in range(nc):
+            left = margem_esq + j * (pw + espaco_col + margem_esq)
+            top = topo_conteudo + i * (ph + cab + espaco_lin) + cab
+            ax = fig.add_axes([fx(left), fy(top + ph), pw / W, ph / H])
+            ax._merc = {"tema": t, "h_leg": h_leg}
+            if titulos_paineis and k < len(titulos_paineis):
+                tp = titulos_paineis[k]
+                nome, unid = (tp, None) if isinstance(tp, str) else tp
+                prefixo = f"{k + 1}. " if numerar_paineis and nl * nc > 1 else ""
+                ax.annotate(prefixo + nome, (0, 1), xycoords="axes fraction",
+                            xytext=(-margem_esq * 72 + 0.5, (h_leg + 0.15) * 72),
+                            textcoords="offset points", fontsize=T["painel"], weight="bold",
+                            color=t.texto, va="bottom", ha="left", annotation_clip=False)
+                if unid:
+                    ax.annotate(unid, (0, 1), xycoords="axes fraction",
+                                xytext=(-margem_esq * 72 + 0.5, (h_leg + 0.02) * 72),
+                                textcoords="offset points", fontsize=T["painel_unidade"],
+                                style="italic", color=t.texto_2, va="bottom", ha="left",
+                                annotation_clip=False)
+            axes.append(ax)
+            k += 1
+    fig._merc = {"tema": t, "W": W, "H": H, "margem_esq": margem_esq}
+    return (fig, axes[0]) if len(axes) == 1 else (fig, axes)
 
-    if grade == (1, 1):
-        return fig, axes[0][0]
-    if grade[0] == 1:
-        return fig, axes[0]
-    return fig, axes
 
-
-def legenda(fig, itens, ncol=None):
-    """Legenda na faixa sob o título. itens = [(rótulo, cor, 'barra'|'linha'|'ponto'), ...]"""
-    m = getattr(fig, "_merc", None)
-    if not m or not m["legenda"]:
-        return
-    t = m["tema"]
+def legenda(ax, itens, ncol=None, x=None):
+    """Legenda compacta sobre o painel. itens = [(rótulo, cor, tipo)], tipo em
+    'linha' | 'tracejada' | 'barra' | 'ponto' | 'area'."""
+    t = ax._merc["tema"]
+    W = ax.figure._merc["W"]
+    me = ax.figure._merc["margem_esq"]
     alcas = []
-    for rotulo, cor, tipo in itens:
+    for rot, cor, tipo in itens:
         if tipo == "linha":
-            alcas.append(Line2D([], [], color=cor, lw=2, label=rotulo))
+            alcas.append(Line2D([], [], color=cor, lw=1.6, label=rot))
         elif tipo == "tracejada":
-            alcas.append(Line2D([], [], color=cor, lw=1.6, ls=(0, (3, 2)), label=rotulo))
+            alcas.append(Line2D([], [], color=cor, lw=1.2, ls=(0, (3, 1.6)), label=rot))
         elif tipo == "ponto":
-            alcas.append(Line2D([], [], color=cor, lw=0, marker="o", ms=6,
-                                markeredgecolor=t.fundo, label=rotulo))
+            alcas.append(Line2D([], [], color=cor, lw=0, marker="o", ms=4.5, label=rot))
         else:
-            alcas.append(Rectangle((0, 0), 1, 1, facecolor=cor, label=rotulo))
-    fig.legend(handles=alcas, loc="upper left", bbox_to_anchor=(m["x0"] - 0.006, m["legenda_y"]),
-               bbox_transform=fig.transFigure, ncol=ncol or len(alcas),
-               handlelength=1.0, handleheight=0.8, handletextpad=0.45,
-               columnspacing=1.3, borderaxespad=0, borderpad=0.1,
-               fontsize=TAMANHO["legenda"], labelcolor=t.texto_2)
-
-
-def subtitulo(ax, texto, direita=None):
-    """Título pequeno de painel (small multiples): 'Microsoft' ........ '40 GW'."""
-    t = ax.figure._merc["tema"]
-    ax.text(0, 1.06, texto, transform=ax.transAxes, fontsize=TAMANHO["rotulo"],
-            weight="bold", color=t.texto, ha="left", va="bottom")
-    if direita:
-        ax.text(1, 1.06, direita, transform=ax.transAxes, fontsize=TAMANHO["rotulo"],
-                weight="bold", color=t.texto_2, ha="right", va="bottom")
+            alcas.append(Rectangle((0, 0), 1, 1, facecolor=cor, label=rot))
+    bb = ax.get_position()
+    xa = x if x is not None else -me / (bb.width * W)
+    ax.legend(handles=alcas, loc="lower left", bbox_to_anchor=(xa, 1.0), ncol=ncol or len(alcas),
+              handlelength=1.3, handleheight=0.65, handletextpad=0.4, columnspacing=1.2,
+              borderaxespad=0.15, borderpad=0, fontsize=T["legenda"], labelcolor=t.texto_2,
+              frameon=False)
 
 
 def salvar(fig, caminho, formatos=("png", "svg"), dpi=300):
-    """Salva PNG (300 dpi, para Word/PDF) e SVG (texto editável, para Figma)."""
+    """PNG 300 dpi (documentos) + SVG com texto editável (Figma/Illustrator)."""
     caminho = Path(caminho)
     caminho.parent.mkdir(parents=True, exist_ok=True)
     for f in formatos:

@@ -1,113 +1,95 @@
-"""Tokens de marca Mercurius para gráficos.
+"""Tokens visuais Mercurius Research.
 
-Cores extraídas do design system de mercuriuscrypto.com e ajustadas para
-leitura em gráfico. As paletas categóricas foram validadas (banda de
-luminosidade, croma, separação para daltonismo deutan/protan/tritan e
-contraste com o fundo). Não invente cores novas: use os papéis abaixo.
+Referências de linguagem: exhibits de Morgan Stanley Research, JPM Guide to the
+Markets e figuras do FMI (WEO/GFSR). Tipografia pequena e precisa, linhas finas,
+navy como âncora e o teal da marca como destaque.
+
+Paleta categórica validada (excluindo o navy-âncora, que é neutro por design):
+banda de luminosidade, croma, ΔE para deutan/protan/tritan ≥ 13 entre vizinhas.
 """
 
-from dataclasses import dataclass, field
-
-# --- Cores de marca (site) -------------------------------------------------
-MARCA = {
-    "superficie_0": "#070c10",
-    "superficie_1": "#0e1318",
-    "superficie_2": "#161b20",
-    "texto_1": "#f2f6f8",
-    "texto_2": "#a6b3bd",
-    "texto_3": "#76828b",
-    "texto_4": "#4c575f",
-    "acento": "#50ddd5",      # teal da marca (botões, destaques)
-    "neon": "#02fef3",        # só para assinatura/logo, nunca em dados
-    "positivo": "#3ad693",
-    "negativo": "#fd736d",
-    "alerta": "#f4c352",
-    "info": "#59c5f5",
-}
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class Tema:
     nome: str
     fundo: str
-    texto: str            # títulos, valores
-    texto_2: str          # eixos, legendas
-    texto_3: str          # notas, fonte
-    linha_fina: str       # réguas, grid, bordas de tabela
-    principal: str        # série protagonista (o "preto" do estilo XP)
-    destaque: str         # série/coluna a destacar (o "amarelo" do estilo XP)
-    outros: str           # "Outros", contexto, séries de fundo
-    categorica: tuple     # ordem FIXA — nunca reordene, nunca gere a 7ª cor
+    texto: str          # títulos e valores
+    texto_2: str        # ticks, rótulos
+    texto_3: str        # fonte, notas, anotações discretas
+    grade: str          # linhas de grade
+    eixo: str           # linha de base / zero
+    sombra: str         # faixas de período, fundos de caixa
+    regua: str          # régua superior da figura
+    principal: str      # navy — série âncora
+    destaque: str       # teal da marca
+    outros: str         # contexto / "Outros"
+    categorica: tuple   # ordem FIXA
     positivo: str
     negativo: str
-    divergente: tuple     # (polo negativo, meio neutro, polo positivo)
-    sequencial: tuple     # do mais claro ao mais escuro, um só matiz
-    cabecalho_tabela: str
-    texto_cabecalho: str
-    faixa_tabela: str     # fundo de linhas de subtotal / seções
+    divergente: tuple   # (negativo, meio, positivo)
+    sequencial: tuple   # claro -> escuro
 
 
 CLARO = Tema(
     nome="claro",
     fundo="#ffffff",
-    texto="#0e1318",
-    texto_2="#4c575f",
-    texto_3="#76828b",
-    linha_fina="#d5dadd",
-    principal="#1f2529",
-    destaque="#1aa39b",
-    outros="#c5cdd3",
-    # validada: L 0.43–0.77, croma ≥ 0.1, ΔE CVD ≥ 18 entre vizinhas
-    categorica=("#1f2529", "#1aa39b", "#3b6fd4", "#e8a317", "#8a6bd6", "#e2605a"),
-    positivo="#1aa39b",
-    negativo="#e2605a",
-    divergente=("#e2605a", "#f3f5f6", "#1aa39b"),
-    sequencial=("#e6f6f5", "#b3e6e2", "#6fcdc6", "#1aa39b", "#0b6e69"),
-    cabecalho_tabela="#1f2529",
-    texto_cabecalho="#ffffff",
-    faixa_tabela="#eef1f3",
+    texto="#0e1a24",
+    texto_2="#4a5761",
+    texto_3="#7b8791",
+    grade="#e4e9ed",
+    eixo="#55626c",
+    sombra="#eef2f5",
+    regua="#0e2a3b",
+    principal="#0e2a3b",
+    destaque="#17a398",
+    outros="#b9c4cc",
+    categorica=("#0e2a3b", "#17a398", "#d2a03c", "#3d7cc9", "#d0605e", "#8e7cc3"),
+    positivo="#17a398",
+    negativo="#d0605e",
+    divergente=("#c4504e", "#f4f5f6", "#138f86"),
+    sequencial=("#f0f7f7", "#c3e5e2", "#7fcbc4", "#2ea79c", "#0f766e", "#0e2a3b"),
 )
 
 ESCURO = Tema(
     nome="escuro",
-    fundo=MARCA["superficie_1"],
-    texto=MARCA["texto_1"],
-    texto_2=MARCA["texto_2"],
-    texto_3=MARCA["texto_3"],
-    linha_fina="#2a3238",
-    principal="#c9d2d8",
-    destaque=MARCA["acento"],
+    fundo="#0e1318",
+    texto="#f2f6f8",
+    texto_2="#a6b3bd",
+    texto_3="#76828b",
+    grade="#1f272e",
+    eixo="#56636d",
+    sombra="#161d23",
+    regua="#50ddd5",
+    principal="#d5dde2",
+    destaque="#50ddd5",
     outros="#4c575f",
-    # validada contra #0e1318: L 0.48–0.67, ΔE CVD ≥ 16 entre vizinhas
-    categorica=("#c9d2d8", "#22a8a0", "#3f7fe0", "#b8841c", "#8a70e0", "#e05a55"),
+    categorica=("#d5dde2", "#22a8a0", "#b8841c", "#3f7fe0", "#e05a55", "#8a70e0"),
     positivo="#3ad693",
     negativo="#fd736d",
-    divergente=("#e05a55", "#2a3238", "#22a8a0"),
-    sequencial=("#163634", "#145a56", "#1a8a83", "#2fbdb5", "#7fe6e0"),
-    cabecalho_tabela=MARCA["superficie_2"],
-    texto_cabecalho=MARCA["acento"],
-    faixa_tabela="#161b20",
+    divergente=("#e05a55", "#222a31", "#22a8a0"),
+    sequencial=("#132226", "#134a47", "#16736d", "#1f9c94", "#3fc9c0", "#a6f0eb"),
 )
 
 TEMAS = {"claro": CLARO, "escuro": ESCURO}
 
-# --- Tipografia ------------------------------------------------------------
-# Preferências na ordem; a primeira instalada (ou em mercurius_charts/fonts) vence.
-FONTE_TEXTO = ["Inter", "Segoe UI", "Arial", "DejaVu Sans"]
-FONTE_TITULO = ["Outfit", "Inter", "Segoe UI", "Arial", "DejaVu Sans"]
-FONTE_MONO = ["JetBrains Mono", "Consolas", "DejaVu Sans Mono"]
+# Arial/Helvetica: o padrão de facto em research sell-side e no FMI.
+# Disponível em qualquer Windows/Mac, então a figura sai igual na máquina de todos.
+FONTES = ["Arial", "Helvetica", "Liberation Sans", "DejaVu Sans"]
 
-# Tamanhos em pontos (impressão A4; figura "inteira" ≈ 17 cm de largura)
-TAMANHO = {
-    "titulo_figura": 10.5,
-    "unidade": 10.5,
-    "eixo": 8,
-    "rotulo": 8,
-    "rotulo_total": 8.5,
-    "legenda": 8,
-    "fonte": 6.8,
-    "assinatura": 7,
+# Tamanhos em pontos para figura de 6,5 pol (coluna de relatório A4/Carta).
+T = {
+    "eyebrow": 6.5,
+    "titulo": 10.5,
+    "subtitulo": 8,
+    "painel": 8,
+    "painel_unidade": 7,
+    "tick": 7,
+    "rotulo": 7,
+    "anotacao": 6.5,
+    "legenda": 7,
+    "fonte": 6,
 }
 
-# Larguras padrão (polegadas). "inteira" = coluna cheia de um relatório A4.
-LARGURA = {"inteira": 6.9, "meia": 3.35, "slide": 11.0, "social": 6.0}
+LARGURA = {"inteira": 6.5, "meia": 3.15, "slide": 10.0, "social": 5.4}
