@@ -3,3 +3,4 @@ __pycache__/
 saida/
 .venv/
 web/_preview.html
+web/_artifact.html
