@@ -249,7 +249,7 @@
   const parse = d3.timeParse("%Y-%m-%d");
   function datas(serie) { return serie.map(([d, v]) => [parse(d), v]); }
 
-  function larguraTexto(s, px = 11) { return s.length * px * 0.56 + 2; }
+  function larguraTexto(s, px = 11) { return s.length * px * 0.6 + 4; }
 
   function eixoY(g, y, w, t, fmt, ticks) {
     const ts = ticks || y.ticks(5);
