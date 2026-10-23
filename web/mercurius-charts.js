@@ -329,7 +329,7 @@
     return montar(plot, o.altura || 340, ({ svg, w, h, t, tip }) => {
       const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
       const etq = o.etiquetas !== false;
-      const maxTag = etq ? d3.max(S, (s) => larguraTexto(fmtTag(s.d.at(-1)[1])) + 10 + larguraTexto(s.nome)) + 16 : 12;
+      const maxTag = etq ? d3.max(S, (s) => larguraTexto(fmtTag(s.d.at(-1)[1])) + 10 + larguraTexto(s.nome)) + 26 : 12;
       const todos = S.flatMap((s) => s.d.map((p) => p[1]));
       let y, ticks;
       const m = { t: 18, r: maxTag, b: 26, l: 0 };
@@ -698,7 +698,7 @@
       const y = d3.scaleBand().domain(dados.map((d) => d[0])).range([0, ih]).padding(0.3);
       const ext = d3.extent([0, ...dados.map((d) => d[1])]);
       const amp = ext[1] - ext[0];
-      const x = d3.scaleLinear().domain([ext[0] < 0 ? ext[0] - amp * 0.16 : 0, ext[1]]).range([0, iw]);
+      const x = d3.scaleLinear().domain([ext[0] < 0 ? ext[0] - amp * 0.3 : 0, ext[1]]).range([0, iw]);
       const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
       if (o.referencia) {
         const xr = x(o.referencia[0]);
@@ -998,7 +998,8 @@
       eixoX(g, x, ih, t, o.passo || "ano");
       const pior = DD.reduce((a, b) => (b[1] < a[1] ? b : a));
       g.append("circle").attr("cx", x(pior[0])).attr("cy", y(pior[1])).attr("r", 3.5).attr("fill", t.neg).attr("stroke", t.bg).attr("stroke-width", 1.5);
-      g.append("text").attr("x", x(pior[0]) + 8).attr("y", y(pior[1]) + 4).attr("fill", t.fg).attr("font-size", 11).attr("font-weight", 600)
+      const aDireita = x(pior[0]) < iw * 0.7;
+      g.append("text").attr("x", x(pior[0]) + (aDireita ? 8 : -8)).attr("y", y(pior[1]) + 4).attr("text-anchor", aDireita ? "start" : "end").attr("fill", t.fg).attr("font-size", 11).attr("font-weight", 600)
         .text(`Pior queda: ${F.pct(pior[1], 0)} (${F.mes(pior[0])})`);
       tags(g, iw, [{ y: y(DD.at(-1)[1]), texto: fmt(DD.at(-1)[1]), cor: t.neg, nome: "" }], t);
       const cx = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", t.fg3).attr("opacity", 0);
@@ -1242,6 +1243,95 @@
     });
   }
 
+
+  // ============================================ curvas (eixo x numérico)
+  // Séries com x numérico (anos desde o início, prazo, nível). series: {nome: [[x, y], ...]}
+  function curvas(plot, o) {
+    const nomes = Object.keys(o.series);
+    const fmtY = o.fmtY || ((v) => F.num(v)), fmtX = o.fmtX || ((v) => F.num(v));
+    if (o.etiquetas === false) legenda(plot, nomes.map((n, i) => [n, o.cores?.[n] || `s${i + 1}`, "linha"]));
+    return montar(plot, o.altura || 340, ({ svg, w, h, t, tip }) => {
+      const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
+      const todos = nomes.flatMap((n) => o.series[n]);
+      const ext = d3.extent(todos, (p) => p[1]);
+      const y = o.log ? d3.scaleLog().domain(o.dominioY || [ext[0] * 0.7, ext[1] * 1.4]) : d3.scaleLinear().domain(o.dominioY || ext).nice();
+      const ticks = o.log ? (o.ticksY || ticksLog(y.domain()[0], y.domain()[1])) : y.ticks(5);
+      const etq = o.etiquetas !== false;
+      const maxTag = etq ? d3.max(nomes, (n) => larguraTexto(n, 11)) + 16 : 10;
+      const m = { t: 10, r: maxTag, b: o.tituloX ? 40 : 26, l: d3.max(ticks, (v) => larguraTexto(fmtY(v))) + 10 };
+      const iw = w - m.l - m.r, ih = h - m.t - m.b;
+      y.range([ih, 0]);
+      const x = d3.scaleLinear().domain(o.dominioX || d3.extent(todos, (p) => p[0])).range([0, iw]);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      eixoY(g, y, iw, t, fmtY, ticks);
+      const gx = g.append("g").attr("transform", `translate(0,${ih})`);
+      gx.append("line").attr("x2", iw).attr("stroke", t.eixo);
+      x.ticks(8).forEach((v) => { gx.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y2", 4).attr("stroke", t.eixo);
+        gx.append("text").attr("x", x(v)).attr("y", 17).attr("text-anchor", "middle").attr("fill", t.fg2).attr("font-size", 11).text(fmtX(v)); });
+      if (o.tituloX) gx.append("text").attr("x", iw).attr("y", 34).attr("text-anchor", "end").attr("fill", t.fg2).attr("font-size", 11).text(o.tituloX);
+      const ln = d3.line().x((p) => x(p[0])).y((p) => y(p[1])).curve(d3.curveMonotoneX);
+      const clipId = `mcc${Math.random().toString(36).slice(2, 8)}`;
+      svg.append("defs").append("clipPath").attr("id", clipId).append("rect").attr("width", iw + 4).attr("height", ih + 4).attr("y", -2);
+      const gl = g.append("g").attr("clip-path", `url(#${clipId})`);
+      const fim = [];
+      nomes.forEach((n) => {
+        const d = o.series[n].filter((p) => p[0] >= x.domain()[0] && p[0] <= x.domain()[1]);
+        const dest = !o.destaque || o.destaque.includes(n);
+        gl.append("path").datum(d).attr("fill", "none").attr("stroke", corDe[n]).attr("stroke-width", dest ? 2.2 : 1.4)
+          .attr("stroke-opacity", dest ? 1 : 0.85).attr("d", ln);
+        const ult = d.at(-1);
+        g.append("circle").attr("cx", x(ult[0])).attr("cy", y(ult[1])).attr("r", 3).attr("fill", corDe[n]);
+        fim.push({ n, x: x(ult[0]), y: y(ult[1]) });
+      });
+      if (etq) {
+        fim.sort((a, b) => a.y - b.y);
+        for (let i = 1; i < fim.length; i++) fim[i].y = Math.max(fim[i].y, fim[i - 1].y + 14);
+        fim.forEach((f) => { const pos = o.posRotulo?.[f.n]; if (pos) { f.x = x(pos[0]) - 7; f.y = y(pos[1]); } });
+        fim.forEach((f) => g.append("text").attr("x", Math.min(f.x, iw) + 7).attr("y", f.y).attr("dy", "0.35em")
+          .attr("fill", corDe[f.n]).attr("font-size", 11).attr("font-weight", 600).text(f.n));
+      }
+      (o.anotacoes || []).forEach((a) => {
+        g.append("text").attr("x", x(a.x)).attr("y", y(a.y)).attr("dy", a.dy || -8).attr("text-anchor", a.ancora || "middle")
+          .attr("fill", t.fg).attr("font-size", 11).attr("font-weight", 600).text(a.texto);
+      });
+      const pts = g.append("g");
+      g.append("rect").attr("width", iw).attr("height", ih).attr("fill", "transparent")
+        .on("pointermove", (ev) => {
+          const xv = x.invert(d3.pointer(ev)[0]);
+          const vals = nomes.map((n) => { const d = o.series[n]; const i = d3.bisector((p) => p[0]).center(d, xv); return { n, p: d[i] }; })
+            .filter((v) => v.p && Math.abs(v.p[0] - xv) < (x.domain()[1] - x.domain()[0]) / 20);
+          pts.selectAll("circle").data(vals).join("circle").attr("r", 4).attr("cx", (v) => x(v.p[0])).attr("cy", (v) => y(v.p[1])).attr("fill", (v) => corDe[v.n]);
+          if (vals.length) tip.mostrar(`<div class="d">${fmtX(xv)}</div>` + vals.map((v) => linhaTip(corDe[v.n], v.n, fmtY(v.p[1]))).join(""), d3.pointer(ev)[0] + m.l, d3.pointer(ev)[1] + m.t);
+        })
+        .on("pointerleave", () => { pts.selectAll("*").remove(); tip.esconder(); });
+    });
+  }
+
+
+  // ============================================ matriz de correlação (triangular)
+  function correlacao(plot, o) {
+    const n = o.nomes.length;
+    return montar(plot, o.altura || 320, ({ svg, w, h, t, tip }) => {
+      const m = { t: 22, r: 4, b: 4, l: d3.max(o.nomes, (s) => larguraTexto(s, 11)) + 10 };
+      const lado = Math.min((w - m.l - m.r) / (n - 1), (h - m.t - m.b) / (n - 1));
+      const esc = d3.scaleLinear().domain([-1, 0, 1]).range([t.neg, t.bg, t.destaque]).interpolate(d3.interpolateLab);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      for (let i = 1; i < n; i++) {
+        g.append("text").attr("x", -8).attr("y", (i - 1) * lado + lado / 2).attr("dy", "0.35em").attr("text-anchor", "end").attr("fill", t.fg).attr("font-size", 11).text(o.nomes[i]);
+        for (let j = 0; j < i; j++) {
+          const v = o.matriz[i][j], c = esc(v);
+          const cel = g.append("g");
+          cel.append("rect").attr("x", j * lado + 1).attr("y", (i - 1) * lado + 1).attr("width", lado - 2).attr("height", lado - 2).attr("rx", 2).attr("fill", c);
+          cel.append("text").attr("x", j * lado + lado / 2).attr("y", (i - 1) * lado + lado / 2).attr("dy", "0.35em").attr("text-anchor", "middle")
+            .attr("font-size", lado < 34 ? 9.5 : 11).attr("fill", Math.abs(v) > 0.55 ? textoSobre(c) : t.fg).text(F.num(v, 2));
+          cel.on("pointerenter", () => tip.mostrar(`<div class="d">${o.nomes[i]} × ${o.nomes[j]}</div>${linhaTip(c, "Correlação", F.num(v, 2))}`, j * lado + lado + m.l, (i - 1) * lado + m.t))
+            .on("pointerleave", () => tip.esconder());
+        }
+        g.append("text").attr("x", (i - 1) * lado + lado / 2).attr("y", (i - 1) * lado - 5).attr("text-anchor", "middle").attr("fill", t.fg).attr("font-size", 10.5).text(o.nomes[i - 1]);
+      }
+    });
+  }
+
   global.MC = { figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
-    velas, renko, pontoFigura, histograma, drawdown, curvaJuros, boxplot, rrg, colunas, rosca, regressao, F, MESES };
+    velas, renko, pontoFigura, histograma, drawdown, curvaJuros, boxplot, rrg, colunas, rosca, regressao, curvas, correlacao, F, MESES };
 })(window);
