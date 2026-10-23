@@ -574,7 +574,7 @@
         g.append("path").datum(med).attr("fill", t.destaque).attr("fill-opacity", 0.16 + 0.2 * i).attr("d", ar);
         const yb = y(Q[b].at(-1)[1]);
         g.append("text").attr("x", iw + 6).attr("y", yb).attr("dy", "0.35em").attr("fill", t.fg3).attr("font-size", 10.5)
-          .text(`${Math.round((b - a) * 100)}%: ${fmt(Q[b].at(-1)[1])}`);
+          .text(`${Math.round((b - a) * 100)}% até ${fmt(Q[b].at(-1)[1])}`);
       });
       const ln = d3.line().x((p) => x(p[0])).y((p) => y(p[1])).curve(d3.curveMonotoneX);
       g.append("path").datum(hst).attr("fill", "none").attr("stroke", t.fg).attr("stroke-width", 1.8).attr("d", ln);
@@ -961,7 +961,7 @@
       g.append("path").datum(pdf).attr("fill", "none").attr("stroke", t.fg2).attr("stroke-width", 1.4).attr("stroke-dasharray", "4 3")
         .attr("d", d3.line().x((p) => x(p[0])).y((p) => y(p[1])).curve(d3.curveBasis));
       g.append("line").attr("x1", x(VaR)).attr("x2", x(VaR)).attr("y1", 0).attr("y2", ih).attr("stroke", t.neg).attr("stroke-dasharray", "3 3");
-      g.append("text").attr("x", x(VaR) - 5).attr("y", 12).attr("text-anchor", "end").attr("fill", t.neg).attr("font-size", 11).attr("font-weight", 600).text(`VaR ${Math.round((1 - q) * 100)}%: ${F.pct(VaR, 1)}`);
+      g.append("text").attr("x", x(VaR) - 5).attr("y", 12).attr("text-anchor", "end").attr("fill", t.neg).attr("font-size", 11).attr("font-weight", 600).text(`VaR ${Math.round((1 - q) * 100)}% de ${F.pct(VaR, 1)}`);
       const xt = x.ticks(8);
       const gx = g.append("g").attr("transform", `translate(0,${ih})`);
       gx.append("line").attr("x2", iw).attr("stroke", t.eixo);
@@ -1000,7 +1000,7 @@
       g.append("circle").attr("cx", x(pior[0])).attr("cy", y(pior[1])).attr("r", 3.5).attr("fill", t.neg).attr("stroke", t.bg).attr("stroke-width", 1.5);
       const aDireita = x(pior[0]) < iw * 0.7;
       g.append("text").attr("x", x(pior[0]) + (aDireita ? 8 : -8)).attr("y", y(pior[1]) + 4).attr("text-anchor", aDireita ? "start" : "end").attr("fill", t.fg).attr("font-size", 11).attr("font-weight", 600)
-        .text(`Pior queda: ${F.pct(pior[1], 0)} (${F.mes(pior[0])})`);
+        .text(`Pior queda, ${F.pct(pior[1], 0)} em ${F.mes(pior[0])}`);
       tags(g, iw, [{ y: y(DD.at(-1)[1]), texto: fmt(DD.at(-1)[1]), cor: t.neg, nome: "" }], t);
       const cx = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", t.fg3).attr("opacity", 0);
       const bis = d3.bisector((p) => p[0]).center;
@@ -1104,7 +1104,7 @@
     legenda(plot, [["Liderando", "pos", "ponto"], ["Enfraquecendo", "s3", "ponto"], ["Defasados", "neg", "ponto"], ["Melhorando", "s4", "ponto"]]);
     return montar(plot, o.altura || 440, ({ svg, w, h, t, tip }) => {
       const todos = nomes.flatMap((n) => o.ativos[n]);
-      const dx = Math.max(...todos.map((p) => Math.abs(p[0] - 100))) * 1.15, dy = Math.max(...todos.map((p) => Math.abs(p[1] - 100))) * 1.15;
+      const dx = Math.max(...todos.map((p) => Math.abs(p[0] - 100))) * 1.2, dy = Math.max(...todos.map((p) => Math.abs(p[1] - 100))) * 1.45;
       const m = { t: 8, r: 10, b: 36, l: 60 };
       const iw = w - m.l - m.r, ih = h - m.t - m.b;
       const x = d3.scaleLinear().domain([100 - dx, 100 + dx]).range([0, iw]);
