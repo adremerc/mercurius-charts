@@ -30,6 +30,8 @@ Template de gráficos da **Mercurius Research**. Os gráficos são desenhados po
 </script>
 ```
 
+**Tema de relatório:** `MC.figura(alvo, { tema: "relatorio" })` gera o exhibit no padrão de research de banco (Arial, azul-marinho, sem moldura nem marca), para PDFs.
+
 **Tema:** a figura segue a página (`<html data-theme="light">` ou `"dark"`, ou o modo do sistema). Para forçar o tema numa figura só, use `MC.figura(alvo, { tema: "claro" })`.
 
 ## Catálogo (`web/mercurius-charts.js`)
@@ -54,6 +56,10 @@ Template de gráficos da **Mercurius Research**. Os gráficos são desenhados po
 | | `MC.rosca` | composição de carteira; `tipo: "pizza"` |
 | | `MC.barrasHorizontais` | ranking com linha de referência |
 | Fluxos | `MC.barrasTempo` | fluxos semanais e mensais (positivo/negativo) |
+| Política e relatório | `MC.hemiciclo` | assentos de um parlamento por bloco, com linha de maioria |
+| | `MC.halteres` | dois valores por categoria (meta × projeção, antes × depois) |
+| | `MC.intervalos` | faixas de mínimo a máximo por item, com referência (projeções de bancos) |
+| | `MC.tabela` | tabela no padrão Morgan Stanley (réguas azul-marinho, cabeçalho em faixa) |
 | | `MC.areaEmpilhada` | composição no tempo com caixa de números |
 
 Formatos BR em `MC.F`: `num`, `pct`, `pp`, `mil`, `mes`, `dia`.

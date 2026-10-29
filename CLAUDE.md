@@ -32,3 +32,10 @@ destino exige PNG ou SVG estático.
 - Prefira rótulo direto (etiquetas na ponta, rótulos dentro das áreas) a legenda solta.
 - Toda figura nova tem tooltip. As funções da biblioteca já trazem.
 - Use pizza só para até 5 fatias que somam 100%. Prefira `rosca` ou barras.
+
+## Relatórios em PDF
+
+- Para estudos e comitês em PDF, use `tema: "relatorio"` em todas as figuras e `MC.tabela` (ou a mesma
+  aparência em CSS) para as tabelas. Referência visual: exhibits do Goldman Sachs e tabelas do Morgan Stanley.
+- Evite o visual de IA: nada de cartões com borda colorida, cantos arredondados, rótulos em caixa-alta espaçada
+  em toda seção, três cartões iguais lado a lado ou rótulo de valor em todas as barras.

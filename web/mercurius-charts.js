@@ -83,6 +83,36 @@
 .mc-tip .l i{width:8px;height:8px;border-radius:2px;display:inline-block}
 .mc-tip .l b{font-weight:600}
 @media (prefers-reduced-motion: reduce){.mc-tip{transition:none}}
+/* tema "relatorio": exhibit no padrão de research de banco (Arial, azul-marinho, sem moldura nem marca) */
+[data-mc-tema="relatorio"]{
+  --mc-bg:#ffffff; --mc-fg:#111111; --mc-fg2:#444b52; --mc-fg3:#6b737a;
+  --mc-grade:#e7e9ec; --mc-eixo:#3a3f44; --mc-sombra:#f0f2f4; --mc-borda:#d5d9dd; --mc-tip-bg:#ffffff;
+  --mc-destaque:#0b2d5b; --mc-pos:#1f5a9e; --mc-neg:#c0272d; --mc-outros:#b9c1c8;
+  --mc-s1:#0b2d5b; --mc-s2:#7da7d9; --mc-s3:#c0272d; --mc-s4:#9aa3ab; --mc-s5:#d39b2a; --mc-s6:#4b7f74;
+  --mc-fonte:Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+.mc-fig[data-mc-tema="relatorio"]{border-top:0;padding:2px 0 4px;gap:4px}
+[data-mc-tema="relatorio"] .mc-eyebrow{display:none}
+[data-mc-tema="relatorio"] .mc-titulo{font-size:12.5px;line-height:1.3;font-weight:700;color:#0b2d5b;letter-spacing:0}
+[data-mc-tema="relatorio"] .mc-titulo .mc-num{margin-right:6px}
+[data-mc-tema="relatorio"] .mc-sub{font-size:10.5px;color:#444b52}
+[data-mc-tema="relatorio"] .mc-leg{font-size:10px;color:#222;gap:2px 12px}
+[data-mc-tema="relatorio"] .mc-leg i.b{border-radius:0}
+[data-mc-tema="relatorio"] .mc-rod{border-top:0;padding-top:1px;font-size:9px;font-style:italic;color:#555b61}
+[data-mc-tema="relatorio"] .mc-rod b{display:none}
+/* tabela no padrão Morgan Stanley: cabeçalho em negrito sobre faixa clara, réguas azul-marinho, linhas finas */
+.mc-tabfig{margin:0;font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;color:#111}
+.mc-tabtit{font-weight:700;font-size:12.5px;line-height:1.3;color:#0b2d5b;margin-bottom:4px}
+.mc-tabtit .mc-num{margin-right:6px}
+.mc-tab{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px;line-height:1.35}
+.mc-tab th{font-weight:700;text-align:left;vertical-align:bottom;padding:4px 6px;background:#e8ecf1;
+  border-top:1.5px solid #0b2d5b;border-bottom:1px solid #0b2d5b}
+.mc-tab td{padding:3px 6px;border-bottom:.5px solid #d3d8dd;vertical-align:top}
+.mc-tab tbody tr:last-child td{border-bottom:1.5px solid #0b2d5b}
+.mc-tab .num{text-align:right;font-variant-numeric:tabular-nums}
+.mc-tab tr.dest td{background:#eef3f9;font-weight:700}
+.mc-tab .pos{color:#1f5a9e}.mc-tab .neg{color:#c0272d}
+.mc-tabfig figcaption{font-size:9px;font-style:italic;color:#555b61;margin-top:3px;line-height:1.4}
 `;
   if (!document.getElementById("mc-css")) {
     const s = document.createElement("style");
@@ -162,7 +192,7 @@
     const el = typeof plot === "string" ? document.querySelector(plot) : plot;
     const m = { largura: 0, f: null };
     const f = () => {
-      const w = Math.max(240, Math.round(el.clientWidth));
+      const w = Math.max(160, Math.round(el.clientWidth)); // painéis estreitos em página A4 de duas colunas
       el.innerHTML = "";
       const t = tema(el);
       const svg = d3.select(el).append("svg").attr("width", w).attr("height", altura).attr("role", "img");
@@ -200,10 +230,12 @@
     const raiz = typeof alvo === "string" ? document.querySelector(alvo) : alvo;
     raiz.innerHTML = "";
     const fig = d3.select(raiz).append("figure").attr("class", "mc-fig");
-    if (o.tema) fig.attr("data-mc-tema", o.tema); // "claro" | "escuro" força o tema desta figura
+    if (o.tema) fig.attr("data-mc-tema", o.tema); // "claro" | "escuro" | "relatorio" força o tema desta figura
     const cab = fig.append("div").attr("class", "mc-cab");
     if (o.numero != null) cab.append("div").attr("class", "mc-eyebrow").text(`Figura ${o.numero}`);
-    cab.append("h3").attr("class", "mc-titulo").text(o.titulo);
+    const h3 = cab.append("h3").attr("class", "mc-titulo");
+    if (o.numero != null && o.tema === "relatorio") h3.append("span").attr("class", "mc-num").text(`Figura ${o.numero}`);
+    h3.append("span").text(o.titulo);
     if (o.subtitulo) cab.append("p").attr("class", "mc-sub").text(o.subtitulo);
     const leg = fig.append("div").attr("class", "mc-leg");
     const paineis = o.paineis || [{}];
@@ -269,6 +301,10 @@
     let ticks;
     if (passo === "ano") ticks = d3.timeYear.range(d3.timeYear.ceil(a), b);
     else ticks = d3.timeMonth.every(passo === "semestre" ? 6 : passo === "trimestre" ? 3 : 1).range(d3.timeMonth.ceil(a), b);
+    // painel estreito: mostra um rótulo a cada k para não sobrepor
+    const largRotulo = passo === "ano" ? 34 : 48;
+    const k = Math.max(1, Math.ceil((ticks.length * largRotulo) / Math.max(1, x.range()[1])));
+    if (k > 1) ticks = ticks.filter((_, i) => (ticks.length - 1 - i) % k === 0);
     const gx = g.append("g").attr("transform", `translate(0,${h})`);
     gx.append("line").attr("x1", 0).attr("x2", x.range()[1]).attr("stroke", t.eixo).attr("shape-rendering", "crispEdges");
     const tk = gx.selectAll("g").data(ticks).join("g").attr("transform", (d) => `translate(${x(d)},0)`);
@@ -308,14 +344,26 @@
     // itens: [{y, texto, cor, nome}] — etiquetas na borda direita, sem sobreposição
     itens.sort((a, b) => a.y - b.y);
     for (let i = 1; i < itens.length; i++) itens[i].y = Math.max(itens[i].y, itens[i - 1].y + 20);
+    let fimNome = 0;
     for (const it of itens) {
       const tw = larguraTexto(it.texto, 11) + 10;
-      const gg = g.append("g").attr("transform", `translate(${w + 8},${it.y})`);
+      const gg = it.g = g.append("g").attr("transform", `translate(${w + 8},${it.y})`);
       gg.append("rect").attr("y", -9).attr("height", 18).attr("width", tw).attr("rx", 3).attr("fill", it.cor);
       gg.append("text").attr("x", tw / 2).attr("dy", "0.35em").attr("text-anchor", "middle")
         .attr("fill", textoSobre(it.cor)).attr("font-size", 11).attr("font-weight", 650).text(it.texto);
-      if (it.nome) gg.append("text").attr("x", tw + 6).attr("dy", "0.35em").attr("fill", t.fg2)
-        .attr("font-size", 11).text(it.nome);
+      if (it.nome) {
+        const tn = gg.append("text").attr("x", tw + 6).attr("dy", "0.35em").attr("fill", t.fg2).attr("font-size", 11).text(it.nome);
+        fimNome = Math.max(fimNome, tw + 6 + (tn.node().getComputedTextLength?.() || larguraTexto(it.nome, 11)));
+      }
+    }
+    // selo opcional depois do nome (ex.: retorno anualizado em destaque), alinhado numa coluna
+    for (const it of itens.filter((q) => q.selo)) {
+      const sx = fimNome + 10;
+      const r = it.g.append("rect").attr("x", sx).attr("y", -9).attr("height", 18).attr("rx", 3).attr("fill", it.selo.cor);
+      const tx = it.g.append("text").attr("x", sx + 6).attr("dy", "0.35em").attr("fill", textoSobre(it.selo.cor))
+        .attr("font-size", 11).attr("font-weight", 650).text(it.selo.texto);
+      // a medida sai antes da fonte em negrito carregar, daí a folga de 10%
+      r.attr("width", (tx.node().getComputedTextLength?.() || larguraTexto(it.selo.texto, 11)) * 1.1 + 12);
     }
   }
 
@@ -329,7 +377,8 @@
     return montar(plot, o.altura || 340, ({ svg, w, h, t, tip }) => {
       const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
       const etq = o.etiquetas !== false;
-      const maxTag = etq ? d3.max(S, (s) => larguraTexto(fmtTag(s.d.at(-1)[1])) + 10 + larguraTexto(s.nome)) + 26 : 12;
+      const selo = (n) => o.selos?.[n] && { texto: o.selos[n].texto, cor: o.selos[n].cor === "pos" ? t.pos : o.selos[n].cor === "neutro" ? t.fg3 : o.selos[n].cor };
+      const maxTag = etq ? d3.max(S, (s) => larguraTexto(fmtTag(s.d.at(-1)[1])) + 10 + larguraTexto(s.nome) + (selo(s.nome) ? larguraTexto(selo(s.nome).texto, 11) + 20 : 0)) + 26 : 12;
       const todos = S.flatMap((s) => s.d.map((p) => p[1]));
       let y, ticks;
       const m = { t: 18, r: maxTag, b: 26, l: 0 };
@@ -378,7 +427,7 @@
         g.append("text").attr("x", px - 26).attr("y", py - 16).attr("text-anchor", "end").attr("fill", t.fg)
           .attr("font-size", 11).attr("font-weight", 600).text(o.destaque.texto(p[1], p[0]));
       }
-      if (etq) tags(g, iw, S.map((s) => ({ y: y(s.d.at(-1)[1]), texto: fmtTag(s.d.at(-1)[1]), cor: corDe[s.nome], nome: s.nome })), t);
+      if (etq) tags(g, iw, S.map((s) => ({ y: y(s.d.at(-1)[1]), texto: fmtTag(s.d.at(-1)[1]), cor: corDe[s.nome], nome: s.nome, selo: selo(s.nome) })), t);
       // crosshair
       const cx = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", t.fg3).attr("opacity", 0);
       const pts = g.append("g");
@@ -693,17 +742,22 @@
     const fmt = o.fmt || ((v) => F.pct(v, 0, true));
     const dados = [...o.dados].sort((a, b) => b[1] - a[1]);
     return montar(plot, o.altura || dados.length * 26 + 30, ({ svg, w, h, t, tip }) => {
-      const m = { t: o.referencia ? 22 : 4, r: 44, b: 4, l: d3.max(dados, (d) => larguraTexto(d[0], 11.5)) + 12 };
+      // margens pelo tamanho real dos rótulos de valor (11,5px, peso 550)
+      const larg = (v) => larguraTexto(fmt(v), 12.5) + 8;
+      const pos = dados.filter((d) => d[1] >= 0), neg = dados.filter((d) => d[1] < 0);
+      const m = { t: o.referencia ? 22 : 4, r: pos.length ? d3.max(pos, (d) => larg(d[1])) + 14 : 8, b: 4,
+        l: d3.max(dados, (d) => larguraTexto(d[0], 11.5)) + 12 };
       const iw = w - m.l - m.r, ih = h - m.t - m.b;
       const y = d3.scaleBand().domain(dados.map((d) => d[0])).range([0, ih]).padding(0.3);
-      const ext = d3.extent([0, ...dados.map((d) => d[1])]);
-      const amp = ext[1] - ext[0];
-      const x = d3.scaleLinear().domain([ext[0] < 0 ? ext[0] - amp * 0.3 : 0, ext[1]]).range([0, iw]);
+      // a linha de referência entra no domínio, mesmo fora do alcance das barras
+      const ext = d3.extent([0, ...dados.map((d) => d[1]), ...(o.referencia ? [o.referencia[0] * 1.15] : [])]);
+      const folgaNeg = neg.length ? d3.max(neg, (d) => larg(d[1])) : 0;
+      const x = d3.scaleLinear().domain([ext[0], ext[1]]).range([folgaNeg, iw]);
       const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
       if (o.referencia) {
         const xr = x(o.referencia[0]);
         g.append("line").attr("x1", xr).attr("x2", xr).attr("y1", -6).attr("y2", ih).attr("stroke", t.fg2).attr("stroke-dasharray", "3 3");
-        g.append("text").attr("x", xr).attr("y", -10).attr("text-anchor", "middle").attr("fill", t.fg2).attr("font-size", 10.5).text(o.referencia[1]);
+        g.append("text").attr("x", xr).attr("y", -10).attr("text-anchor", xr > iw - 40 ? "end" : "middle").attr("fill", t.fg2).attr("font-size", 10.5).text(o.referencia[1]);
       }
       dados.forEach(([nome, v]) => {
         const c = o.polaridade === false ? (o.destaque?.includes(nome) ? t.destaque : t.outros) : v >= 0 ? t.pos : t.neg;
@@ -1143,9 +1197,9 @@
     return montar(plot, o.altura || 320, ({ svg, w, h, t, tip }) => {
       const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
       const todos = nomes.flatMap((n) => o.series[n]);
-      const y = d3.scaleLinear().domain([Math.min(0, d3.min(todos)), d3.max(todos) * 1.12]).nice();
+      const y = d3.scaleLinear().domain([Math.min(0, d3.min(todos) * 1.18), Math.max(0, d3.max(todos)) * 1.12]).nice();
       const ticks = y.ticks(5);
-      const m = { t: 18, r: 4, b: 26, l: d3.max(ticks, (v) => larguraTexto(fmt(v))) + 10 };
+      const m = { t: 18, r: 4, b: o.categorias.some((c) => c.includes(" ")) ? 40 : 26, l: d3.max(ticks, (v) => larguraTexto(fmt(v))) + 10 };
       const iw = w - m.l - m.r, ih = h - m.t - m.b;
       y.range([ih, 0]);
       const x0 = d3.scaleBand().domain(o.categorias).range([0, iw]).paddingInner(0.28).paddingOuter(0.12);
@@ -1161,15 +1215,19 @@
         nomes.forEach((n) => {
           const v = o.series[n][i];
           const xx = x0(cat) + x1(n);
+          // polaridade: verde para alta, vermelho para queda; a 1ª série fica clara
+          const corBarra = o.polaridade ? (v >= 0 ? t.pos : t.neg) : corDe[n];
           g.append("rect").attr("x", xx).attr("width", x1.bandwidth()).attr("y", y(Math.max(0, v))).attr("height", Math.abs(y(v) - y(0)))
-            .attr("rx", 2).attr("fill", corDe[n])
+            .attr("rx", 2).attr("fill", corBarra).attr("fill-opacity", o.polaridade && nomes.length > 1 && n === nomes[0] ? 0.4 : 1)
             .on("pointerenter", function () { d3.select(this).attr("opacity", 0.7); tip.mostrar(`<div class="d">${cat}</div>` + nomes.map((q) => linhaTip(corDe[q], q, fmt(o.series[q][i]))).join("") + (o.margem ? linhaTip(t.fg3, o.margem[0], F.pct(o.series[o.margem[2]][i] / o.series[o.margem[1]][i], 0)) : ""), xx + m.l, y(v) + m.t); })
             .on("pointerleave", function () { d3.select(this).attr("opacity", 1); tip.esconder(); });
           const rotular = o.rotulos === true || (o.rotulos == null && n === nomes[0]) || (Array.isArray(o.rotulos) && o.rotulos.includes(n));
           if (rotular && x1.bandwidth() > 14) g.append("text").attr("x", xx + x1.bandwidth() / 2).attr("y", v >= 0 ? y(v) - 4 : y(v) + 12)
             .attr("text-anchor", "middle").attr("font-size", 10).attr("fill", t.fg2).text(fmt(v));
         });
-        g.append("text").attr("x", x0(cat) + x0.bandwidth() / 2).attr("y", ih + 17).attr("text-anchor", "middle").attr("fill", t.fg2).attr("font-size", 11).text(cat);
+        const pal = cat.split(" ");
+        const lin = pal.length > 1 && larguraTexto(cat) > x0.step() - 4 ? [pal.slice(0, Math.ceil(pal.length / 2)).join(" "), pal.slice(Math.ceil(pal.length / 2)).join(" ")] : [cat];
+        lin.forEach((l, k) => g.append("text").attr("x", x0(cat) + x0.bandwidth() / 2).attr("y", ih + 17 + k * 13).attr("text-anchor", "middle").attr("fill", t.fg2).attr("font-size", 11).text(l));
       });
       g.append("line").attr("x1", 0).attr("x2", iw).attr("y1", y(0)).attr("y2", y(0)).attr("stroke", t.eixo);
     });
@@ -1312,7 +1370,8 @@
   function correlacao(plot, o) {
     const n = o.nomes.length;
     return montar(plot, o.altura || 320, ({ svg, w, h, t, tip }) => {
-      const m = { t: 22, r: 4, b: 4, l: d3.max(o.nomes, (s) => larguraTexto(s, 11)) + 10 };
+      const largMax = d3.max(o.nomes, (s) => larguraTexto(s, 11));
+      const m = { t: 6, r: 4, b: largMax * 0.6 + 16, l: largMax + 10 };
       const lado = Math.min((w - m.l - m.r) / (n - 1), (h - m.t - m.b) / (n - 1));
       const esc = d3.scaleLinear().domain([-1, 0, 1]).range([t.neg, t.bg, t.destaque]).interpolate(d3.interpolateLab);
       const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
@@ -1327,11 +1386,163 @@
           cel.on("pointerenter", () => tip.mostrar(`<div class="d">${o.nomes[i]} × ${o.nomes[j]}</div>${linhaTip(c, "Correlação", F.num(v, 2))}`, j * lado + lado + m.l, (i - 1) * lado + m.t))
             .on("pointerleave", () => tip.esconder());
         }
-        g.append("text").attr("x", (i - 1) * lado + lado / 2).attr("y", (i - 1) * lado - 5).attr("text-anchor", "middle").attr("fill", t.fg).attr("font-size", 10.5).text(o.nomes[i - 1]);
+        // nome da coluna embaixo da matriz, inclinado, para não invadir as células
+        const cx = (i - 1) * lado + lado / 2, cy = (n - 1) * lado + 12;
+        g.append("text").attr("transform", `translate(${cx},${cy}) rotate(-35)`).attr("text-anchor", "end").attr("dy", "0.35em")
+          .attr("fill", t.fg).attr("font-size", 10.5).text(o.nomes[i - 1]);
       }
     });
   }
 
-  global.MC = { figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
+
+  // ================================================================= hemiciclo
+  // Assentos de um parlamento em semicírculo, da esquerda para a direita na ordem dos grupos.
+  function hemiciclo(plot, o) {
+    const grupos = o.grupos; // [[nome, assentos, cor?]]
+    const N = d3.sum(grupos, (g) => g[1]);
+    const fmt = o.fmt || ((v) => F.num(v));
+    legenda(plot, grupos.map(([n, v, c], i) => [`${n} (${fmt(v)})`, c || `s${i + 1}`, "ponto"]));
+    return montar(plot, o.altura || 230, ({ svg, w, h, t, tip }) => {
+      const corDe = grupos.map(([, , c], i) => cor(t, c, i));
+      const R = Math.min(w / 2 - 6, h - 28), cx = w / 2, cy = h - 20, r0 = R * (o.miolo ?? 0.38);
+      // número de fileiras pela densidade: cada assento ocupa uma área parecida
+      const L = o.fileiras || Math.max(3, Math.round(Math.sqrt((N * (R - r0)) / (Math.PI * (R + r0) / 2))));
+      const raios = d3.range(L).map((k) => r0 + ((R - r0) * (k + 0.5)) / L);
+      const soma = d3.sum(raios);
+      let porFila = raios.map((r) => Math.round((N * r) / soma));
+      porFila[L - 1] += N - d3.sum(porFila);
+      const lugares = [];
+      raios.forEach((r, k) => {
+        const n = porFila[k];
+        for (let j = 0; j < n; j++) {
+          const a = n === 1 ? Math.PI / 2 : Math.PI - (j * Math.PI) / (n - 1);
+          lugares.push({ a, r, x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) });
+        }
+      });
+      lugares.sort((p, q) => q.a - p.a || p.r - q.r);
+      const passo = (R - r0) / L;
+      const raio = Math.max(1.2, Math.min(passo * 0.42, (Math.PI * r0) / porFila[0] * 0.42));
+      let i = 0;
+      grupos.forEach(([nome, v], gi) => {
+        const ini = i;
+        for (let k = 0; k < v; k++, i++) {
+          const p = lugares[i];
+          svg.append("circle").attr("cx", p.x).attr("cy", p.y).attr("r", raio).attr("fill", corDe[gi])
+            .on("pointerenter", () => tip.mostrar(`<div class="d">${nome}</div>${linhaTip(corDe[gi], "Assentos", fmt(v))}${linhaTip(t.fg3, "Fatia", F.pct(v / N, 0))}`, p.x, p.y))
+            .on("pointerleave", () => tip.esconder());
+        }
+        // rótulo do grupo no meio do seu arco, por fora
+        if (o.rotulos !== false && v / N > 0.06) {
+          const meio = lugares[Math.floor((ini + i - 1) / 2)], a = meio.a, rr = R + 12;
+          svg.append("text").attr("x", cx + rr * Math.cos(a)).attr("y", cy - rr * Math.sin(a)).attr("dy", "0.35em")
+            .attr("text-anchor", a > Math.PI * 0.6 ? "end" : a < Math.PI * 0.4 ? "start" : "middle")
+            .attr("font-size", 11).attr("font-weight", 700).attr("fill", corDe[gi]).text(fmt(v));
+        }
+      });
+      if (o.maioria) {
+        svg.append("line").attr("x1", cx).attr("x2", cx).attr("y1", cy - R - 6).attr("y2", cy - r0 + 6)
+          .attr("stroke", t.fg).attr("stroke-dasharray", "3 3");
+        svg.append("text").attr("x", cx).attr("y", cy - r0 * 0.35).attr("text-anchor", "middle").attr("font-size", 18)
+          .attr("font-weight", 700).attr("fill", t.fg).text(fmt(N));
+        svg.append("text").attr("x", cx).attr("y", cy - r0 * 0.35 + 15).attr("text-anchor", "middle").attr("font-size", 10.5)
+          .attr("fill", t.fg2).text(`maioria de ${fmt(o.maioria)}`);
+      }
+    });
+  }
+
+  // ================================================================= halteres
+  // Dois valores por categoria ligados por um traço (meta × projeção, antes × depois).
+  function halteres(plot, o) {
+    const nomes = Object.keys(o.series);
+    const fmt = o.fmt || ((v) => F.num(v, 1));
+    legenda(plot, nomes.map((n, i) => [n, o.cores?.[n] || `s${i + 1}`, "ponto"]));
+    return montar(plot, o.altura || o.categorias.length * 30 + 34, ({ svg, w, h, t, tip }) => {
+      const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
+      const todos = nomes.flatMap((n) => o.series[n]).concat(o.zero === false ? [] : [0]);
+      const ext = d3.extent(todos), folga = (ext[1] - ext[0]) * 0.12;
+      const x = d3.scaleLinear().domain([ext[0] - folga, ext[1] + folga]).nice();
+      const m = { t: 6, r: 30, b: 24, l: d3.max(o.categorias, (c) => larguraTexto(c, 11.5)) + 12 };
+      const iw = w - m.l - m.r, ih = h - m.t - m.b;
+      x.range([0, iw]);
+      const y = d3.scaleBand().domain(o.categorias).range([0, ih]).padding(0.4);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      x.ticks(6).forEach((v) => {
+        g.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y1", 0).attr("y2", ih).attr("stroke", v === 0 ? t.eixo : t.grade);
+        g.append("text").attr("x", x(v)).attr("y", ih + 16).attr("text-anchor", "middle").attr("font-size", 11).attr("fill", t.fg2).text(fmt(v));
+      });
+      o.categorias.forEach((c, i) => {
+        const yy = y(c) + y.bandwidth() / 2, vs = nomes.map((n) => o.series[n][i]);
+        g.append("text").attr("x", -10).attr("y", yy).attr("dy", "0.35em").attr("text-anchor", "end").attr("font-size", 11.5).attr("fill", t.fg).text(c);
+        g.append("line").attr("x1", x(d3.min(vs))).attr("x2", x(d3.max(vs))).attr("y1", yy).attr("y2", yy).attr("stroke", t.outros).attr("stroke-width", 3);
+        const ordem = [...nomes].sort((a, b) => o.series[a][i] - o.series[b][i]);
+        nomes.forEach((n) => {
+          const v = o.series[n][i];
+          g.append("circle").attr("cx", x(v)).attr("cy", yy).attr("r", 5.5).attr("fill", corDe[n]).attr("stroke", t.bg).attr("stroke-width", 1.5)
+            .on("pointerenter", () => tip.mostrar(`<div class="d">${c}</div>` + nomes.map((q) => linhaTip(corDe[q], q, fmt(o.series[q][i]))).join(""), x(v) + m.l, yy + m.t))
+            .on("pointerleave", () => tip.esconder());
+          const esq = n === ordem[0] && vs[0] !== vs[1];
+          g.append("text").attr("x", x(v) + (esq ? -9 : 9)).attr("y", yy).attr("dy", "0.35em").attr("text-anchor", esq ? "end" : "start")
+            .attr("font-size", 10.5).attr("font-weight", 600).attr("fill", corDe[n]).text(fmt(v));
+        });
+      });
+    });
+  }
+
+  // ================================================================= intervalos
+  // Faixas de mínimo a máximo por item (projeções de bancos, cenários), com linha de referência.
+  function intervalos(plot, o) {
+    const fmt = o.fmt || ((v) => F.num(v, 2));
+    const grupos = [...new Set(o.dados.map((d) => d[3]).filter(Boolean))];
+    if (grupos.length > 1) legenda(plot, grupos.map((gn, i) => [gn, o.cores?.[gn] || `s${i + 1}`, "barra"]));
+    return montar(plot, o.altura || o.dados.length * 24 + 40, ({ svg, w, h, t, tip }) => {
+      const corDe = Object.fromEntries(grupos.map((gn, i) => [gn, cor(t, o.cores?.[gn], i)]));
+      const vals = o.dados.flatMap((d) => [d[1], d[2]]).concat(o.referencia ? [o.referencia[0]] : []);
+      const ext = d3.extent(vals), folga = (ext[1] - ext[0]) * 0.08;
+      const m = { t: o.referencia ? 20 : 6, r: 40, b: 22, l: d3.max(o.dados, (d) => larguraTexto(d[0], 11.5)) + 12 };
+      const iw = w - m.l - m.r, ih = h - m.t - m.b;
+      const x = d3.scaleLinear().domain([ext[0] - folga, ext[1] + folga]).range([0, iw]);
+      const y = d3.scaleBand().domain(o.dados.map((d) => d[0])).range([0, ih]).padding(0.45);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      x.ticks(6).forEach((v) => {
+        g.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y1", 0).attr("y2", ih).attr("stroke", t.grade);
+        g.append("text").attr("x", x(v)).attr("y", ih + 15).attr("text-anchor", "middle").attr("font-size", 11).attr("fill", t.fg2).text(fmt(v));
+      });
+      o.dados.forEach(([nome, a, b, gn]) => {
+        const c = gn ? corDe[gn] : t.s[0], yy = y(nome), bh = y.bandwidth();
+        g.append("text").attr("x", -10).attr("y", yy + bh / 2).attr("dy", "0.35em").attr("text-anchor", "end").attr("font-size", 11.5).attr("fill", t.fg).text(nome);
+        const el = a === b
+          ? g.append("rect").attr("x", x(a) - 2).attr("width", 4).attr("y", yy - 2).attr("height", bh + 4).attr("fill", c)
+          : g.append("rect").attr("x", x(a)).attr("width", Math.max(2, x(b) - x(a))).attr("y", yy).attr("height", bh).attr("fill", c);
+        el.on("pointerenter", () => tip.mostrar(`<div class="d">${nome}</div>${linhaTip(c, "Faixa", a === b ? fmt(a) : `${fmt(a)} a ${fmt(b)}`)}`, x(b) + m.l, yy + m.t))
+          .on("pointerleave", () => tip.esconder());
+        g.append("text").attr("x", x(b) + 6).attr("y", yy + bh / 2).attr("dy", "0.35em").attr("font-size", 10.5).attr("font-weight", 600).attr("fill", t.fg)
+          .text(a === b ? fmt(a) : `${fmt(a)} a ${fmt(b)}`);
+      });
+      if (o.referencia) {
+        const xr = x(o.referencia[0]);
+        g.append("line").attr("x1", xr).attr("x2", xr).attr("y1", -6).attr("y2", ih).attr("stroke", t.fg).attr("stroke-dasharray", "3 3");
+        g.append("text").attr("x", xr).attr("y", -9).attr("text-anchor", "middle").attr("font-size", 10.5).attr("fill", t.fg).text(o.referencia[1]);
+      }
+    });
+  }
+
+  // ================================================================= tabela
+  // Tabela no padrão de research (Morgan Stanley): MC.tabela("#alvo", { numero, titulo, colunas, linhas, fonte }).
+  // colunas: [{ nome, num?, largura? }]; linhas: arrays de células (texto ou HTML); destaque: índices de linhas.
+  function tabela(alvo, o) {
+    const raiz = typeof alvo === "string" ? document.querySelector(alvo) : alvo;
+    const esc = (s) => String(s ?? "");
+    const cols = o.colunas.map((c) => (typeof c === "string" ? { nome: c } : c));
+    const sinal = (v) => (typeof v === "string" && /^[−-]\s?\d/.test(v) ? "neg" : typeof v === "string" && /^\+\s?\d/.test(v) ? "pos" : "");
+    raiz.innerHTML = `<figure class="mc-tabfig">`
+      + (o.titulo ? `<div class="mc-tabtit">${o.numero != null ? `<span class="mc-num">Tabela ${o.numero}</span>` : ""}${esc(o.titulo)}</div>` : "")
+      + `<table class="mc-tab"><colgroup>${cols.map((c) => `<col${c.largura ? ` style="width:${c.largura}"` : ""}>`).join("")}</colgroup>`
+      + `<thead><tr>${cols.map((c) => `<th class="${c.num ? "num" : ""}">${esc(c.nome)}</th>`).join("")}</tr></thead><tbody>`
+      + o.linhas.map((l, i) => `<tr class="${o.destaque?.includes(i) ? "dest" : ""}">${l.map((v, j) => `<td class="${cols[j]?.num ? "num " + (o.sinal ? sinal(v) : "") : ""}">${esc(v)}</td>`).join("")}</tr>`).join("")
+      + `</tbody></table>` + (o.fonte || o.nota ? `<figcaption>${o.nota ? `Nota: ${esc(o.nota)} ` : ""}${o.fonte ? `Fonte: ${esc(o.fonte)}` : ""}</figcaption>` : "") + `</figure>`;
+    return raiz;
+  }
+
+  global.MC = { hemiciclo, halteres, intervalos, tabela, figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
     velas, renko, pontoFigura, histograma, drawdown, curvaJuros, boxplot, rrg, colunas, rosca, regressao, curvas, correlacao, F, MESES };
 })(window);

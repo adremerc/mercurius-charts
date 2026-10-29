@@ -263,6 +263,31 @@ const SECOES = [
                 [F.pct(s.USDT[k] / total[k]), "fatia do USDT"]] });
     }},
   ]},
+  { id: "relatorio", titulo: "Política e relatório (padrão de research de banco)", texto: "Tema \"relatorio\": Arial, azul-marinho e sem moldura, para PDFs no padrão Goldman e Morgan Stanley. Tipos para política e cenários.", itens: [
+    { tipo: "MC.hemiciclo", gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Na Câmara, a base do governo tem menos da metade de uma maioria",
+        subtitulo: "Deputados por bloco", fonte: FONTE });
+      MC.hemiciclo(plot, { grupos: [["Base do governo", 124, "s3"], ["Centrão", 246, "s4"], ["Oposição", 143, "s1"]], maioria: 257, rotulos: false, altura: 230 });
+    }},
+    { tipo: "MC.halteres", gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Entre a meta e o que o mercado espera, falta cerca de 1 ponto do PIB por ano",
+        subtitulo: "Resultado primário, % do PIB", fonte: FONTE });
+      MC.halteres(plot, { categorias: ["2027", "2028", "2029", "2030"],
+        series: { "Meta": [0.5, 1.0, 1.25, 1.5], "Mercado": [-0.3, 0.0, 0.1, 0.24] }, cores: { "Meta": "s1", "Mercado": "s3" }, fmt: (v) => F.num(v, 2) });
+    }},
+    { tipo: "MC.intervalos", gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Os bancos dão ao real uma faixa larga, conforme o cenário fiscal",
+        subtitulo: "Projeções de câmbio, R$ por US$", fonte: FONTE });
+      MC.intervalos(plot, { referencia: [5.34, "Hoje"], cores: { "Otimista": "s1", "Base": "s2", "Estresse": "s3" }, fmt: (v) => F.num(v, 2),
+        dados: [["Banco A", 4.5, 4.8, "Otimista"], ["Banco B", 5.2, 5.2, "Base"], ["Banco C", 5.5, 5.5, "Base"], ["Banco D", 5.6, 6.0, "Estresse"]] });
+    }},
+    { tipo: "MC.tabela", gerar: (alvo, n) => {
+      MC.tabela(alvo, { numero: n, titulo: "O primeiro ano de cada mandato", sinal: true,
+        colunas: [{ nome: "Ano", largura: "14%" }, { nome: "Ministro" }, { nome: "Bolsa no ano", num: true }, { nome: "Dólar no ano", num: true }],
+        linhas: [["2003", "Palocci", "+97,3%", "−18,2%"], ["2007", "Mantega", "+43,6%", "−17,2%"], ["2023", "Haddad", "+22,0%", "−7,2%"]],
+        destaque: [2], fonte: FONTE });
+    }},
+  ]},
 ];
 
 function dedent(fn) {
