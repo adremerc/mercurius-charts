@@ -1499,14 +1499,15 @@
     return montar(plot, o.altura || o.categorias.length * 30 + 34, ({ svg, w, h, t, tip }) => {
       const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
       const todos = nomes.flatMap((n) => o.series[n]).concat(o.zero === false ? [] : [0]);
-      const ext = d3.extent(todos), folga = (ext[1] - ext[0]) * 0.12;
+      const ext = d3.extent(todos), folga = (ext[1] - ext[0]) * 0.22;
       const x = d3.scaleLinear().domain([ext[0] - folga, ext[1] + folga]).nice();
       const m = { t: 6, r: 30, b: 24, l: d3.max(o.categorias, (c) => larguraTexto(c, 11.5)) + 12 };
       const iw = w - m.l - m.r, ih = h - m.t - m.b;
       x.range([0, iw]);
       const y = d3.scaleBand().domain(o.categorias).range([0, ih]).padding(0.4);
       const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
-      x.ticks(6).forEach((v) => {
+      // número de marcas pela largura, para os rótulos do eixo não se encostarem
+      x.ticks(Math.max(2, Math.floor(iw / 70))).forEach((v) => {
         g.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y1", 0).attr("y2", ih).attr("stroke", v === 0 ? t.eixo : t.grade);
         g.append("text").attr("x", x(v)).attr("y", ih + 16).attr("text-anchor", "middle").attr("font-size", 11).attr("fill", t.fg2).text(fmt(v));
       });
@@ -1610,7 +1611,9 @@
       const y0 = dy < 0 ? ty - alto + 9 : ty + 10;
       ga.append("line").attr("x1", px).attr("y1", py + (dy < 0 ? -5 : 5)).attr("x2", tx).attr("y2", dy < 0 ? ty + 3 : ty)
         .attr("stroke", c).attr("stroke-width", 0.8);
-      const txt = ga.append("text").attr("x", tx).attr("y", y0).attr("text-anchor", a.ancora || "middle").attr("font-size", px2).attr("fill", t.fg);
+      // contorno na cor do fundo: o texto continua legível quando cruza uma linha
+      const txt = ga.append("text").attr("x", tx).attr("y", y0).attr("text-anchor", a.ancora || "middle").attr("font-size", px2).attr("fill", t.fg)
+        .attr("paint-order", "stroke").attr("stroke", t.bg).attr("stroke-width", 3.5).attr("stroke-linejoin", "round");
       let k = 0;
       if (a.titulo) txt.append("tspan").attr("x", tx).attr("dy", 0).attr("font-weight", 700).attr("fill", c).text(a.titulo), k++;
       corpo.forEach((l) => { txt.append("tspan").attr("x", tx).attr("dy", k++ ? 12.4 : 0).text(l); });
