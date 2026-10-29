@@ -123,17 +123,25 @@
   background:rgba(255,255,255,.88);padding:2px 4px}
 /* organograma (MC.organograma) */
 .mc-org{font-family:var(--mc-fonte,Arial,sans-serif);color:#111;display:flex;flex-direction:column;align-items:center}
-.mc-org-caixa{border:1px solid currentColor;min-width:0}
-.mc-org-cab{color:#fff;font-weight:700;font-size:11px;line-height:1.25;padding:5px 7px;text-align:center}
-.mc-org-cab small{display:block;font-weight:400;font-size:9.5px;opacity:.9;margin-top:1px}
-.mc-org-corpo{background:#fff;padding:5px 7px 6px;font-size:9.5px;line-height:1.38;color:#111}
-.mc-org-corpo ul{margin:0;padding-left:11px}.mc-org-corpo li{margin:0 0 2px}
-.mc-org-raiz{width:46%}
-.mc-org-tronco{width:1px;height:12px;background:#666}
-.mc-org-ramos{display:grid;gap:10px;width:100%;position:relative;padding-top:12px}
-.mc-org-ramos::before{content:"";position:absolute;top:0;height:1px;background:#666;left:var(--mc-org-ini);right:var(--mc-org-fim)}
+.mc-org-caixa{min-width:0;background:#f3f5f8;border-top:4px solid currentColor;display:flex;flex-direction:column}
+.mc-org-cab{display:flex;gap:7px;align-items:center;padding:7px 8px 5px}
+.mc-org-cab img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none;border:1.5px solid #fff;box-shadow:0 0 0 1px currentColor}
+.mc-org-tit{font-weight:700;font-size:11.5px;line-height:1.2;color:currentColor}
+.mc-org-tit small{display:block;font-weight:400;font-size:9.5px;color:#555;margin-top:2px}
+.mc-org-corpo{padding:0 8px 7px;font-size:9.6px;line-height:1.4;color:#222}
+.mc-org-corpo ul{margin:0;padding:0;list-style:none}
+.mc-org-corpo li{position:relative;padding-left:9px;margin:0 0 2px}
+.mc-org-corpo li::before{content:"";position:absolute;left:0;top:5px;width:4px;height:4px;background:currentColor}
+.mc-org-corpo li b{color:#111}
+.mc-org-raiz{min-width:46%}
+.mc-org-raiz .mc-org-caixa{background:currentColor}
+.mc-org-raiz .mc-org-tit, .mc-org-raiz .mc-org-tit small{color:#fff}
+.mc-org-tronco{width:1px;height:12px;background:#9aa3ab}
+.mc-org-ramos{display:grid;gap:8px;width:100%;position:relative;padding-top:12px}
+.mc-org-ramos::before{content:"";position:absolute;top:0;height:1px;background:#9aa3ab;left:var(--mc-org-ini);right:var(--mc-org-fim)}
 .mc-org-ramo{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0}
-.mc-org-ramo::before{content:"";position:absolute;top:-12px;left:50%;width:1px;height:12px;background:#666}
+.mc-org-ramo::before{content:"";position:absolute;top:-12px;left:50%;width:1px;height:12px;background:#9aa3ab}
+.mc-org-ramo.dest .mc-org-caixa{background:#fff;box-shadow:0 0 0 1px currentColor inset}
 /* tabela no padrão Morgan Stanley: cabeçalho em negrito sobre faixa clara, réguas azul-marinho, linhas finas */
 .mc-tabfig{margin:0;font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;color:#111}
 .mc-tabtit{font-weight:700;font-size:12.5px;line-height:1.3;color:#0b2d5b;margin-bottom:4px}
@@ -1681,16 +1689,88 @@
   // ============================================================ organograma
   // MC.organograma("#alvo", { raiz: { titulo, sub, cor }, ramos: [{ titulo, sub, cor, itens: [..], filhos?: [{ titulo, sub, cor, itens }] }] })
   function organograma(alvo, o) {
+    // caixa: { titulo, sub, cor, foto?, itens?: [texto], destaque? }
     const raiz = typeof alvo === "string" ? document.querySelector(alvo) : alvo;
-    const caixa = (b) => `<div class="mc-org-caixa" style="color:${b.cor || "#0b2d5b"}"><div class="mc-org-cab" style="background:${b.cor || "#0b2d5b"}">${b.titulo}${b.sub ? `<small>${b.sub}</small>` : ""}</div>`
+    const caixa = (b) => `<div class="mc-org-caixa" style="color:${b.cor || "#0b2d5b"}"><div class="mc-org-cab">${b.foto ? `<img src="${b.foto}" alt="">` : ""}`
+      + `<div class="mc-org-tit">${b.titulo}${b.sub ? `<small>${b.sub}</small>` : ""}</div></div>`
       + (b.itens && b.itens.length ? `<div class="mc-org-corpo"><ul>${b.itens.map((i) => `<li>${i}</li>`).join("")}</ul></div>` : "") + `</div>`;
     const n = o.ramos.length, meio = 100 / n / 2;
-    raiz.innerHTML = `<div class="mc-org">${caixa(o.raiz)}<div class="mc-org-tronco"></div>`
+    raiz.innerHTML = `<div class="mc-org"><div class="mc-org-raiz">${caixa(o.raiz)}</div><div class="mc-org-tronco"></div>`
       + `<div class="mc-org-ramos" style="grid-template-columns:repeat(${n},minmax(0,1fr));--mc-org-ini:${meio}%;--mc-org-fim:${meio}%">`
-      + o.ramos.map((r) => `<div class="mc-org-ramo">${caixa(r)}${(r.filhos || []).map(caixa).join("")}</div>`).join("") + `</div></div>`;
+      + o.ramos.map((r) => `<div class="mc-org-ramo${r.destaque ? " dest" : ""}">${caixa(r)}${(r.filhos || []).map(caixa).join("")}</div>`).join("") + `</div></div>`;
     return raiz;
   }
 
-  global.MC = { linhaDoTempo, organograma, hemiciclo, halteres, intervalos, tabela, figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
+
+
+  // ============================================================ barra dividida
+  // Barras horizontais de 100% divididas entre grupos (votos por turno, fatias de mercado), com rótulos dentro.
+  // o.linhas: [[rotulo, [v1, v2, ...]]]; o.grupos: [nome1, nome2, ...]; o.meio: linha de 50%
+  function barraDividida(plot, o) {
+    const fmt = o.fmt || ((v) => F.num(v, 1) + "%");
+    legenda(plot, o.grupos.map((n, i) => [n, o.cores?.[n] || `s${i + 1}`, "barra"]));
+    return montar(plot, o.altura || o.linhas.length * 34 + 26, ({ svg, w, h, t, tip }) => {
+      const corDe = o.grupos.map((n, i) => cor(t, o.cores?.[n], i));
+      const m = { t: 4, r: 4, b: 18, l: d3.max(o.linhas, (l) => larguraTexto(l[0], 11.5)) + 12 };
+      const iw = w - m.l - m.r, ih = h - m.t - m.b;
+      const x = d3.scaleLinear().domain([0, 100]).range([0, iw]);
+      const y = d3.scaleBand().domain(o.linhas.map((l) => l[0])).range([0, ih]).padding(0.28);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      o.linhas.forEach(([rot, vals]) => {
+        const tot = d3.sum(vals); let acc = 0;
+        g.append("text").attr("x", -10).attr("y", y(rot) + y.bandwidth() / 2).attr("dy", "0.35em").attr("text-anchor", "end").attr("font-size", 11.5).attr("fill", t.fg).text(rot);
+        vals.forEach((v, k) => {
+          const p = (v / tot) * 100, x0 = x(acc);
+          g.append("rect").attr("x", x0).attr("width", x(p) - x(0)).attr("y", y(rot)).attr("height", y.bandwidth()).attr("fill", corDe[k])
+            .on("pointerenter", () => tip.mostrar(`<div class="d">${rot}</div>${linhaTip(corDe[k], o.grupos[k], fmt(v))}`, x0 + m.l, y(rot) + m.t))
+            .on("pointerleave", () => tip.esconder());
+          if (x(p) - x(0) > 40) g.append("text").attr("x", k === 0 ? x0 + 7 : x0 + x(p) - x(0) - 7).attr("y", y(rot) + y.bandwidth() / 2).attr("dy", "0.35em")
+            .attr("text-anchor", k === 0 ? "start" : "end").attr("font-size", 12).attr("font-weight", 700).attr("fill", textoSobre(corDe[k])).text(fmt(v));
+          acc += p;
+        });
+      });
+      if (o.meio !== false) {
+        g.append("line").attr("x1", x(50)).attr("x2", x(50)).attr("y1", -2).attr("y2", ih + 2).attr("stroke", t.fg).attr("stroke-dasharray", "3 3");
+        g.append("text").attr("x", x(50)).attr("y", ih + 14).attr("text-anchor", "middle").attr("font-size", 10.5).attr("fill", t.fg2).text(o.rotuloMeio || "50%");
+      }
+    });
+  }
+
+  // ============================================================ colunas empilhadas
+  // Decomposição de um valor em partes por categoria, com total no topo e rótulo dentro de cada parte.
+  // o.categorias: [..]; o.partes: { nome: [valores por categoria] }
+  function colunasEmpilhadas(plot, o) {
+    const nomes = Object.keys(o.partes), fmt = o.fmt || ((v) => F.num(v, 1));
+    legenda(plot, nomes.map((n, i) => [n, o.cores?.[n] || `s${i + 1}`, "barra"]));
+    return montar(plot, o.altura || 260, ({ svg, w, h, t, tip }) => {
+      const corDe = Object.fromEntries(nomes.map((n, i) => [n, cor(t, o.cores?.[n], i)]));
+      const tot = o.categorias.map((_, i) => d3.sum(nomes, (n) => o.partes[n][i]));
+      const y = d3.scaleLinear().domain([0, d3.max(tot) * 1.12]).nice();
+      const ticks = y.ticks(5);
+      const m = { t: 8, r: 6, b: 24, l: d3.max(ticks, (v) => larguraTexto(fmt(v))) + 10 };
+      const iw = w - m.l - m.r, ih = h - m.t - m.b;
+      y.range([ih, 0]);
+      const x = d3.scaleBand().domain(o.categorias).range([0, iw]).padding(0.42);
+      const g = svg.append("g").attr("transform", `translate(${m.l},${m.t})`);
+      eixoY(g, y, iw, t, fmt, ticks);
+      o.categorias.forEach((c, i) => {
+        let acc = 0;
+        nomes.forEach((n) => {
+          const v = o.partes[n][i], y0 = y(acc + v), alt = y(acc) - y(acc + v);
+          g.append("rect").attr("x", x(c)).attr("width", x.bandwidth()).attr("y", y0).attr("height", alt).attr("fill", corDe[n])
+            .on("pointerenter", () => tip.mostrar(`<div class="d">${c}</div>${linhaTip(corDe[n], n, fmt(v))}`, x(c) + m.l, y0 + m.t)).on("pointerleave", () => tip.esconder());
+          if (alt > 16) g.append("text").attr("x", x(c) + x.bandwidth() / 2).attr("y", y0 + alt / 2).attr("dy", "0.35em").attr("text-anchor", "middle")
+            .attr("font-size", 11).attr("font-weight", 700).attr("fill", textoSobre(corDe[n])).text(fmt(v));
+          acc += v;
+        });
+        g.append("text").attr("x", x(c) + x.bandwidth() / 2).attr("y", y(tot[i]) - 6).attr("text-anchor", "middle").attr("font-size", 11.5)
+          .attr("font-weight", 700).attr("fill", t.fg).text((o.prefixoTotal || "") + fmt(tot[i]));
+        g.append("text").attr("x", x(c) + x.bandwidth() / 2).attr("y", ih + 16).attr("text-anchor", "middle").attr("font-size", 11).attr("fill", t.fg2).text(c);
+      });
+      g.append("line").attr("x1", 0).attr("x2", iw).attr("y1", ih).attr("y2", ih).attr("stroke", t.eixo);
+    });
+  }
+
+  global.MC = { montar, textoSobre, barraDividida, colunasEmpilhadas, linhaDoTempo, organograma, hemiciclo, halteres, intervalos, tabela, figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
     velas, renko, pontoFigura, histograma, drawdown, curvaJuros, boxplot, rrg, colunas, rosca, regressao, curvas, correlacao, F, MESES };
 })(window);
