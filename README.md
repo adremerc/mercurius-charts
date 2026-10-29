@@ -60,6 +60,9 @@ Template de gráficos da **Mercurius Research**. Os gráficos são desenhados po
 | | `MC.halteres` | dois valores por categoria (meta × projeção, antes × depois) |
 | | `MC.intervalos` | faixas de mínimo a máximo por item, com referência (projeções de bancos) |
 | | `MC.tabela` | tabela no padrão Morgan Stanley (réguas azul-marinho, cabeçalho em faixa) |
+| | `MC.linhaDoTempo` | barra de anos com eventos acima e abaixo, sem sobreposição (padrão Goldman) |
+| | `MC.organograma` | estrutura de cargos com caixas coloridas e listas |
+| | `MC.linhas({ anotacoes })` | eventos marcados na linha com losango, chamada e legenda de categorias |
 | | `MC.areaEmpilhada` | composição no tempo com caixa de números |
 
 Formatos BR em `MC.F`: `num`, `pct`, `pp`, `mil`, `mes`, `dia`.

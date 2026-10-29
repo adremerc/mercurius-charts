@@ -100,6 +100,40 @@
 [data-mc-tema="relatorio"] .mc-leg i.b{border-radius:0}
 [data-mc-tema="relatorio"] .mc-rod{border-top:0;padding-top:1px;font-size:9px;font-style:italic;color:#555b61}
 [data-mc-tema="relatorio"] .mc-rod b{display:none}
+/* tema "guia": padrão do Guide to the Markets (Arial, cinza-escuro e azul, título em preto, sem moldura) */
+[data-mc-tema="guia"]{
+  --mc-bg:#ffffff; --mc-fg:#1a1a1a; --mc-fg2:#3a3a3a; --mc-fg3:#6e6e6e;
+  --mc-grade:#ececec; --mc-eixo:#3a3a3a; --mc-sombra:#eef0f2; --mc-borda:#d6d6d6; --mc-tip-bg:#ffffff;
+  --mc-destaque:#1680e8; --mc-pos:#1680e8; --mc-neg:#d6403b; --mc-outros:#bdbdbd;
+  --mc-s1:#4a4a4a; --mc-s2:#1680e8; --mc-s3:#0f9d6b; --mc-s4:#6b4bc8; --mc-s5:#d6403b; --mc-s6:#a6a6a6;
+  --mc-fonte:Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+.mc-fig[data-mc-tema="guia"]{border-top:0;padding:0;gap:3px}
+[data-mc-tema="guia"] .mc-eyebrow{display:none}
+[data-mc-tema="guia"] .mc-titulo{font-size:13.5px;line-height:1.25;font-weight:700;color:#111;letter-spacing:0}
+[data-mc-tema="guia"] .mc-titulo .mc-num{display:none}
+[data-mc-tema="guia"] .mc-sub{font-size:11px;color:#333}
+[data-mc-tema="guia"] .mc-leg{font-size:10.5px;color:#222;gap:2px 12px;font-weight:700}
+[data-mc-tema="guia"] .mc-leg i.b{border-radius:0}
+[data-mc-tema="guia"] .mc-rod{border-top:0;padding-top:1px;font-size:9px;color:#555}
+[data-mc-tema="guia"] .mc-rod b{display:none}
+/* legenda sobre a área do gráfico, no canto superior esquerdo */
+.mc-legdentro{position:relative}
+.mc-legdentro > .mc-leg{position:absolute;z-index:2;top:2px;left:var(--mc-legx,46px);flex-direction:column;align-items:flex-start;gap:1px;
+  background:rgba(255,255,255,.88);padding:2px 4px}
+/* organograma (MC.organograma) */
+.mc-org{font-family:var(--mc-fonte,Arial,sans-serif);color:#111;display:flex;flex-direction:column;align-items:center}
+.mc-org-caixa{border:1px solid currentColor;min-width:0}
+.mc-org-cab{color:#fff;font-weight:700;font-size:11px;line-height:1.25;padding:5px 7px;text-align:center}
+.mc-org-cab small{display:block;font-weight:400;font-size:9.5px;opacity:.9;margin-top:1px}
+.mc-org-corpo{background:#fff;padding:5px 7px 6px;font-size:9.5px;line-height:1.38;color:#111}
+.mc-org-corpo ul{margin:0;padding-left:11px}.mc-org-corpo li{margin:0 0 2px}
+.mc-org-raiz{width:46%}
+.mc-org-tronco{width:1px;height:12px;background:#666}
+.mc-org-ramos{display:grid;gap:10px;width:100%;position:relative;padding-top:12px}
+.mc-org-ramos::before{content:"";position:absolute;top:0;height:1px;background:#666;left:var(--mc-org-ini);right:var(--mc-org-fim)}
+.mc-org-ramo{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0}
+.mc-org-ramo::before{content:"";position:absolute;top:-12px;left:50%;width:1px;height:12px;background:#666}
 /* tabela no padrão Morgan Stanley: cabeçalho em negrito sobre faixa clara, réguas azul-marinho, linhas finas */
 .mc-tabfig{margin:0;font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;color:#111}
 .mc-tabtit{font-weight:700;font-size:12.5px;line-height:1.3;color:#0b2d5b;margin-bottom:4px}
@@ -230,15 +264,16 @@
     const raiz = typeof alvo === "string" ? document.querySelector(alvo) : alvo;
     raiz.innerHTML = "";
     const fig = d3.select(raiz).append("figure").attr("class", "mc-fig");
-    if (o.tema) fig.attr("data-mc-tema", o.tema); // "claro" | "escuro" | "relatorio" força o tema desta figura
+    if (o.tema) fig.attr("data-mc-tema", o.tema); // "claro" | "escuro" | "relatorio" | "guia" força o tema desta figura
     const cab = fig.append("div").attr("class", "mc-cab");
     if (o.numero != null) cab.append("div").attr("class", "mc-eyebrow").text(`Figura ${o.numero}`);
     const h3 = cab.append("h3").attr("class", "mc-titulo");
-    if (o.numero != null && o.tema === "relatorio") h3.append("span").attr("class", "mc-num").text(`Figura ${o.numero}`);
+    if (o.numero != null && (o.tema === "relatorio" || o.tema === "guia")) h3.append("span").attr("class", "mc-num").text(`Figura ${o.numero}`);
     h3.append("span").text(o.titulo);
     if (o.subtitulo) cab.append("p").attr("class", "mc-sub").text(o.subtitulo);
     const leg = fig.append("div").attr("class", "mc-leg");
     const paineis = o.paineis || [{}];
+    if (o.legendaDentro && paineis.length === 1) fig.classed("mc-temleg", true);
     const grade = fig.append("div").attr("class", "mc-paineis")
       .style("grid-template-columns", `repeat(auto-fit, minmax(${o.minPainel || 260}px, 1fr))`);
     const plots = paineis.map((p, i) => {
@@ -248,10 +283,14 @@
         pt.append("span").text((paineis.length > 1 ? `${i + 1}. ` : "") + p.titulo);
         if (p.unidade) pt.append("em").text(p.unidade);
       }
-      const pl = pn.append("div").attr("class", "mc-plot").node();
+      // legendaDentro: a legenda flutua sobre o gráfico (só com um painel)
+      const base = o.legendaDentro && paineis.length === 1 ? pn.append("div").attr("class", "mc-legdentro") : pn;
+      if (base !== pn) { base.node().appendChild(leg.node()); if (o.legendaX != null) base.style("--mc-legx", o.legendaX + "px"); }
+      const pl = base.append("div").attr("class", "mc-plot").node();
       pl._mcLeg = leg.node();
       return pl;
     });
+    if (!o.fonte && !o.nota) return plots; // sem fonte: o rodapé fica com a página (padrão de apresentação)
     const rod = fig.append("figcaption").attr("class", "mc-rod");
     const txt = rod.append("div");
     if (o.nota) txt.append("div").text(`Nota: ${o.nota}`);
@@ -390,7 +429,7 @@
         ticks = ticksLog(lo, hi);
       } else {
         const lo = Math.min(0, d3.min(todos)), hi = d3.max(todos);
-        y = d3.scaleLinear().domain([o.zero === false ? d3.min(todos) : lo, hi]).nice().range([ih, 0]);
+        y = d3.scaleLinear().domain(o.dominioY || [o.zero === false ? d3.min(todos) : lo, hi]).nice().range([ih, 0]);
         ticks = y.ticks(5);
       }
       m.l = d3.max(ticks, (v) => larguraTexto(fmt(v))) + 10;
@@ -427,6 +466,7 @@
         g.append("text").attr("x", px - 26).attr("y", py - 16).attr("text-anchor", "end").attr("fill", t.fg)
           .attr("font-size", 11).attr("font-weight", 600).text(o.destaque.texto(p[1], p[0]));
       }
+      if (o.anotacoes) anotar(g, x, y, S, t, o, iw, ih);
       if (etq) tags(g, iw, S.map((s) => ({ y: y(s.d.at(-1)[1]), texto: fmtTag(s.d.at(-1)[1]), cor: corDe[s.nome], nome: s.nome, selo: selo(s.nome) })), t);
       // crosshair
       const cx = g.append("line").attr("y1", 0).attr("y2", ih).attr("stroke", t.fg3).attr("opacity", 0);
@@ -1543,6 +1583,111 @@
     return raiz;
   }
 
-  global.MC = { hemiciclo, halteres, intervalos, tabela, figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
+
+  // ============================================================ anotações de eventos
+  // Losango sobre a linha, linha de chamada e texto com data em negrito, na cor da categoria (padrão Goldman Sachs).
+  // o.anotacoes: [{ x: "AAAA-MM-DD", serie?, titulo, texto, cor?, dx?, dy?, largura?, ancora? }]
+  // o.categoriasAnot: { "Categoria": "cor" } desenha a caixa de legenda das cores no canto indicado (o.legendaAnot = "ie" | "id" | "se" | "sd").
+  function quebrar(txt, larg, px) {
+    const pal = String(txt).split(" "), lin = [];
+    let atual = "";
+    pal.forEach((p) => { const novo = atual ? atual + " " + p : p; if (larguraTexto(novo, px) > larg && atual) { lin.push(atual); atual = p; } else atual = novo; });
+    if (atual) lin.push(atual);
+    return lin;
+  }
+  function anotar(g, x, y, S, t, o, iw, ih) {
+    const bis = d3.bisector((p) => p[0]).left;
+    const ga = g.append("g");
+    o.anotacoes.forEach((a) => {
+      const s = S.find((q) => q.nome === a.serie) || S[0];
+      const i = Math.min(s.d.length - 1, bis(s.d, parse(a.x)));
+      const px = x(s.d[i][0]), py = y(s.d[i][1]);
+      const c = cor(t, a.cor || "s3", 0), px2 = 10.5;
+      const dx = a.dx || 0, dy = a.dy ?? -42;
+      const tx = px + dx, ty = py + dy;
+      const corpo = quebrar(a.texto || "", a.largura || 118, px2);
+      const alto = (corpo.length + (a.titulo ? 1 : 0)) * 12.4;
+      const y0 = dy < 0 ? ty - alto + 9 : ty + 10;
+      ga.append("line").attr("x1", px).attr("y1", py + (dy < 0 ? -5 : 5)).attr("x2", tx).attr("y2", dy < 0 ? ty + 3 : ty)
+        .attr("stroke", c).attr("stroke-width", 0.8);
+      const txt = ga.append("text").attr("x", tx).attr("y", y0).attr("text-anchor", a.ancora || "middle").attr("font-size", px2).attr("fill", t.fg);
+      let k = 0;
+      if (a.titulo) txt.append("tspan").attr("x", tx).attr("dy", 0).attr("font-weight", 700).attr("fill", c).text(a.titulo), k++;
+      corpo.forEach((l) => { txt.append("tspan").attr("x", tx).attr("dy", k++ ? 12.4 : 0).text(l); });
+      ga.append("path").attr("d", d3.symbol(d3.symbolDiamond, 52)()).attr("transform", `translate(${px},${py})`)
+        .attr("fill", c).attr("stroke", t.bg).attr("stroke-width", 1);
+    });
+    if (o.categoriasAnot) {
+      const itens = Object.entries(o.categoriasAnot), lw = d3.max(itens, ([n]) => larguraTexto(n, 11)) + 20, lh = itens.length * 14 + 10;
+      const canto = o.legendaAnot || "ie";
+      const bx = canto[1] === "e" ? 8 : iw - lw - 8, by = canto[0] === "i" ? ih - lh - 8 : 8;
+      const lg = ga.append("g").attr("transform", `translate(${bx},${by})`);
+      lg.append("rect").attr("width", lw).attr("height", lh).attr("fill", t.bg).attr("stroke", "#3b8f6e").attr("stroke-width", 1.2);
+      itens.forEach(([n, cc], j) => lg.append("text").attr("x", lw / 2).attr("y", 16 + j * 14).attr("text-anchor", "middle")
+        .attr("font-size", 11).attr("font-weight", 700).attr("fill", cor(t, cc, 0)).text(n));
+    }
+  }
+
+  // ============================================================ linha do tempo
+  // Barra horizontal com os anos e eventos acima e abaixo, ligados por linhas tracejadas (padrão Goldman Sachs).
+  // o.de, o.ate: anos; o.eventos: [{ data: "AAAA-MM-DD", titulo, texto, cor?, lado: "cima" | "baixo", nivel?: 0..3, icone?: "estrela" | "circulo" }]
+  function linhaDoTempo(plot, o) {
+    return montar(plot, o.altura || 420, ({ svg, w, h, t }) => {
+      const m = { l: 8, r: 8 }, iw = w - m.l - m.r, cy = h / 2, bh = 22;
+      // meio ano de folga nas pontas para os rótulos de ano não cortarem
+      const x = d3.scaleTime().domain([new Date(o.de - 1, 6, 1), new Date(o.ate, 11, 31)]).range([m.l, m.l + iw]);
+      const navy = cor(t, o.corBarra || "s1", 0);
+      svg.append("rect").attr("x", m.l).attr("width", iw).attr("y", cy - bh / 2).attr("height", bh).attr("fill", navy);
+      const passo = o.passoAnos || 2;
+      for (let a = o.de; a <= o.ate; a += passo) {
+        const xx = x(new Date(a, 0, 1));
+        svg.append("rect").attr("x", xx - 17).attr("width", 34).attr("y", cy - bh / 2 + 3).attr("height", bh - 6).attr("fill", t.bg).attr("fill-opacity", 0.12);
+        svg.append("text").attr("x", xx).attr("y", cy).attr("dy", "0.35em").attr("text-anchor", "middle").attr("fill", "#fff")
+          .attr("font-size", 11).attr("font-weight", 700).text(a);
+      }
+      const larg = o.largura || 128;
+      // o espaço entre níveis acompanha o bloco de texto mais alto, para nada se sobrepor
+      const maxLin = d3.max(o.eventos, (e) => 1 + quebrar(e.texto || "", larg, 10).length);
+      const nivelAlt = Math.max(o.nivelAlt || 0, maxLin * 12 + 14);
+      const ocup = { cima: [], baixo: [] };
+      // da direita para a esquerda: um evento cujo texto alcançaria o seguinte sobe acima de todos os que ele cobre,
+      // assim nenhuma linha tracejada atravessa texto
+      [...o.eventos].sort((p, q) => parse(q.data) - parse(p.data)).forEach((e) => {
+        const lado = e.lado || "cima", xx = x(parse(e.data)), c = cor(t, e.cor || "s3", 0);
+        let nv = e.nivel;
+        if (nv == null) { const cobre = ocup[lado].filter((q) => q.x >= xx && q.x - xx < larg); nv = cobre.length ? d3.max(cobre, (q) => q.nv) + 1 : 0; }
+        ocup[lado].push({ x: xx, nv });
+        const sinal = lado === "cima" ? -1 : 1;
+        const yIcone = cy + sinal * (bh / 2 + 16 + nv * nivelAlt);
+        svg.append("line").attr("x1", xx).attr("x2", xx).attr("y1", cy + sinal * bh / 2).attr("y2", yIcone)
+          .attr("stroke", "#9aa3ab").attr("stroke-dasharray", "3 3");
+        if (e.icone === "estrela") svg.append("path").attr("d", d3.symbol(d3.symbolStar, 70)()).attr("transform", `translate(${xx},${yIcone})`).attr("fill", "#e0a32e");
+        else svg.append("circle").attr("cx", xx).attr("cy", yIcone).attr("r", 4.5).attr("fill", t.bg).attr("stroke", c).attr("stroke-width", 2);
+        const corpo = quebrar(e.texto || "", larg, 10);
+        const linhas = [e.titulo, ...corpo];
+        const alto = linhas.length * 12;
+        const ty = lado === "cima" ? yIcone - 8 - alto + 10 : yIcone + 18;
+        const anc = xx + larg > w - 4 ? "end" : "start", tx = anc === "end" ? xx - 7 : xx + 7;
+        const txt = svg.append("text").attr("x", tx).attr("y", ty).attr("text-anchor", anc).attr("font-size", 10).attr("fill", t.fg);
+        linhas.forEach((l, k) => txt.append("tspan").attr("x", tx).attr("dy", k ? 12 : 0).attr("font-weight", k ? 400 : 700)
+          .attr("fill", k ? t.fg : c).text(l));
+      });
+    });
+  }
+
+  // ============================================================ organograma
+  // MC.organograma("#alvo", { raiz: { titulo, sub, cor }, ramos: [{ titulo, sub, cor, itens: [..], filhos?: [{ titulo, sub, cor, itens }] }] })
+  function organograma(alvo, o) {
+    const raiz = typeof alvo === "string" ? document.querySelector(alvo) : alvo;
+    const caixa = (b) => `<div class="mc-org-caixa" style="color:${b.cor || "#0b2d5b"}"><div class="mc-org-cab" style="background:${b.cor || "#0b2d5b"}">${b.titulo}${b.sub ? `<small>${b.sub}</small>` : ""}</div>`
+      + (b.itens && b.itens.length ? `<div class="mc-org-corpo"><ul>${b.itens.map((i) => `<li>${i}</li>`).join("")}</ul></div>` : "") + `</div>`;
+    const n = o.ramos.length, meio = 100 / n / 2;
+    raiz.innerHTML = `<div class="mc-org">${caixa(o.raiz)}<div class="mc-org-tronco"></div>`
+      + `<div class="mc-org-ramos" style="grid-template-columns:repeat(${n},minmax(0,1fr));--mc-org-ini:${meio}%;--mc-org-fim:${meio}%">`
+      + o.ramos.map((r) => `<div class="mc-org-ramo">${caixa(r)}${(r.filhos || []).map(caixa).join("")}</div>`).join("") + `</div></div>`;
+    return raiz;
+  }
+
+  global.MC = { linhaDoTempo, organograma, hemiciclo, halteres, intervalos, tabela, figura, legenda, linhas, barrasTempo, areaEmpilhada, dispersao, leque, calendario, cascata, barrasHorizontais,
     velas, renko, pontoFigura, histograma, drawdown, curvaJuros, boxplot, rrg, colunas, rosca, regressao, curvas, correlacao, F, MESES };
 })(window);

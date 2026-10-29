@@ -281,6 +281,35 @@ const SECOES = [
       MC.intervalos(plot, { referencia: [5.34, "Hoje"], cores: { "Otimista": "s1", "Base": "s2", "Estresse": "s3" }, fmt: (v) => F.num(v, 2),
         dados: [["Banco A", 4.5, 4.8, "Otimista"], ["Banco B", 5.2, 5.2, "Base"], ["Banco C", 5.5, 5.5, "Base"], ["Banco D", 5.6, 6.0, "Estresse"]] });
     }},
+    { tipo: "MC.linhas · anotacoes", inteira: true, gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Eventos que moveram o preço, marcados sobre a linha",
+        subtitulo: "Preço do BTC em US$, diário", fonte: FONTE });
+      const s = D.ohlc.slice(-240).map((p) => [p[0], p[4]]);
+      MC.linhas(plot, { series: { BTC: s }, altura: 340, legenda: false, etiquetas: false,
+        anotacoes: [{ x: s[40][0], titulo: "Evento A", texto: "Regulador aprova novas regras", cor: "s3", dy: -50 },
+                    { x: s[120][0], titulo: "Evento B", texto: "Banco central corta juros", cor: "s6", dy: 50 },
+                    { x: s[200][0], titulo: "Evento C", texto: "Grande emissor lança produto", cor: "s5", dy: -50 }],
+        categoriasAnot: { "Regulação": "s3", "Política monetária": "s6", "Mercado": "s5" }, legendaAnot: "se" });
+    }},
+    { tipo: "MC.linhaDoTempo", inteira: true, gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Marcos de um tema ao longo dos anos",
+        subtitulo: "Acima, decisões de política; abaixo, eleições", fonte: FONTE });
+      MC.linhaDoTempo(plot, { de: 2008, ate: 2026, passoAnos: 3, altura: 300, largura: 100,
+        eventos: [{ data: "2009-01-03", titulo: "Jan/2009", texto: "Bloco gênese do bitcoin", lado: "cima", icone: "estrela", cor: "s5" },
+                  { data: "2017-12-17", titulo: "Dez/2017", texto: "Futuros na CME", lado: "cima", cor: "s1" },
+                  { data: "2024-01-11", titulo: "Jan/2024", texto: "ETFs à vista nos EUA", lado: "cima", cor: "s1" },
+                  { data: "2012-11-28", titulo: "Nov/2012", texto: "1º halving", lado: "baixo", cor: "s3" },
+                  { data: "2016-07-09", titulo: "Jul/2016", texto: "2º halving", lado: "baixo", cor: "s3" },
+                  { data: "2020-05-11", titulo: "Mai/2020", texto: "3º halving", lado: "baixo", cor: "s3" },
+                  { data: "2024-04-20", titulo: "Abr/2024", texto: "4º halving", lado: "baixo", cor: "s3" }] });
+    }},
+    { tipo: "MC.organograma", inteira: true, gerar: (alvo, n) => {
+      const [plot] = MC.figura(alvo, { tema: "relatorio", numero: n, titulo: "Quem decide a política econômica", subtitulo: "Estrutura ilustrativa", fonte: FONTE });
+      MC.organograma(plot, { raiz: { titulo: "Presidência", sub: "Chefe do Executivo", cor: "#0b2d5b" },
+        ramos: [{ titulo: "Fazenda", sub: "Política fiscal", cor: "#c0272d", itens: ["Orçamento e tributos", "Meta de primário"] },
+                { titulo: "Planejamento", sub: "Orçamento", cor: "#5b7a99", itens: ["PLOA e PAC"] },
+                { titulo: "Banco Central", sub: "Autônomo", cor: "#2e7d5b", itens: ["Política monetária", "Mandato fixo"] }] });
+    }},
     { tipo: "MC.tabela", gerar: (alvo, n) => {
       MC.tabela(alvo, { numero: n, titulo: "O primeiro ano de cada mandato", sinal: true,
         colunas: [{ nome: "Ano", largura: "14%" }, { nome: "Ministro" }, { nome: "Bolsa no ano", num: true }, { nome: "Dólar no ano", num: true }],
